@@ -86,11 +86,39 @@ The configuration class will create all beans and inject them when it is configu
 
 ### Beans
 
-A _Bean_ is a value which can be injected into an appropriate container.
+A _Bean_ is a value which can be injected into an appropriate container. It is returned by a method on the AbstractInjectConfiguration subclass.
+
+Unlike Spring the methods that return Bean objects do not become singleton methods. If you manually call a bean method you may receive a different object to the bean that has been used for autowiring. Since the AbstractInjectConfiguration subclass can be autowired, you can inject the bean into the configuration if you need access to it:
+
+    class Configuration extends AbstractInjectConfiguration {
+      @autowired SomeClass someClassBean;
+      @bean Object makeSomeClass() => new SomeClass();
+    }
+
+    Configuration config = new Configuration()
+    config.configure();
+    print(config.someClassBean);
+
+If you need beans to perform additional configuration then you can create an autowired configuration method on the AbstractInjectConfiguration subclass. That method will be invoked with all of the required beans:
+
+    class Configuration extends AbstractInjectConfiguration {
+      @bean Object makeSomeClass() => new SomeClass();
+      @bean AnotherClass makeAnotherClass() => new AnotherClass();
+
+      @autowired void configureSomeClass(SomeClass someClassBean, AnotherClass anotherClassBean) {}
+    }
+
+The bean methods do not have to create the bean, they merely have to return it. This means you can use them to return DOM elements:
+
+    class Configuration extends AbstractInjectConfiguration {
+      @bean Element getBody() => document.querySelector('body');
+    }
+
+If you use this approach then you may wish to review the *polymer_dependency_injection* package, which can scan the DOM looking for annotated polymer elements. It loads those elements as beans and allows them to be autowired.
 
 ### Autowiring
 
-...
+Autowiring allows a method, setter or field to be provided with a bean. Every bean and the AbstractInjectConfiguration subclass are eligible for autowiring.
 
 ### Being Specific with Primary and Qualifier
 
