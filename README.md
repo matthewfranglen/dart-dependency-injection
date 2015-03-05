@@ -223,4 +223,4 @@ Beans are automatically assigned names based on the name of the method that crea
 Example Code
 ------------
 
-...
+Example code is available in the _example_ directory.
