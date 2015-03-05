@@ -165,7 +165,60 @@ When there are multiple beans that match a field you can indicate a preferred be
 
 ### Being Specific with Primary and Qualifier
 
-...
+Multiple beans cannot be assigned to an autowired field. When there are multiple beans that match a field there are two ways to indicate a preferred bean. If there is a single preferred bean then the autowiring can proceed.
+
+The first way is to change the bean to indicate that it is preferred. This is done using the primary annotation:
+
+    class ExampleClass {}
+
+    class Configuration extends AbstractInjectConfiguration {
+      @bean @primary ExampleClass primaryBean() => new ExampleClass();
+      @bean ExampleClass bean() => new ExampleClass();
+
+      // This is autowired with the bean created by primaryBean
+      @autowired ExampleClass field;
+    }
+
+The second way is to change the autowired field to indicate which bean is preferred. This is done by naming the bean and using the qualifier annotation:
+
+    class Configuration extends AbstractInjectConfiguration {
+      @Bean(name="chosen") ExampleClass preferredBean() => new ExampleClass()
+      @bean ExampleClass bean() => new ExampleClass();
+
+      // This is autowired with the bean created by preferredBean
+      @autowired @Qualifier("chosen") ExampleClass field;
+
+      // For methods you need to add the Qualifier to the parameter
+      @autowired void method(@Qualifier("chosen") ExampleClass argument) {}
+
+      // Setters also need the Qualifier on the parameter
+      @autowired set value(@Qualifier("chosen") ExampleClass argument) {}
+    }
+
+Beans are automatically assigned names based on the name of the method that creates them. If the name starts with _get_, _make_ or _build_ then that is removed. The first letter of the name is changed to lower case. For example:
+
+    class Configuration extends AbstractInjectConfiguration {
+      // The name is set, so the method name is not inspected
+      @Bean(name="namedBean") String notInspected() => "Named Bean";
+
+      // The method name starts with get so the bean name is firstBean
+      @bean String getFirstBean() => "First Bean";
+
+      // The method name starts with make so the bean name is secondBean
+      @bean String makeSecondBean() => "Second Bean";
+
+      // The method name starts with build so the bean name is thirdBean
+      @bean String buildThirdBean() => "Third Bean";
+
+      // The method name starts with a capital letter so the bean name is fourthBean
+      @bean String FourthBean() => "Forth Bean";
+
+      // The bean name is fifthBean
+      @bean String fifthBean() => "Fifth Bean";
+
+      // This gets autowired without issue
+      @autowired void method(@Qualifier("namedBean") String value) {}
+    }
 
 Example Code
 ------------
