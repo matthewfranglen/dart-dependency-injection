@@ -105,7 +105,7 @@ If you need beans to perform additional configuration then you can create an aut
       @bean Object makeSomeClass() => new SomeClass();
       @bean AnotherClass makeAnotherClass() => new AnotherClass();
 
-      @autowired void configureSomeClass(SomeClass someClassBean, AnotherClass anotherClassBean) {}
+      @autowired void configureSomeClass(SomeClass someBean, AnotherClass anotherBean) {}
     }
 
 The bean methods do not have to create the bean, they merely have to return it. This means you can use them to return DOM elements:
@@ -119,6 +119,49 @@ If you use this approach then you may wish to review the *polymer_dependency_inj
 ### Autowiring
 
 Autowiring allows a method, setter or field to be provided with a bean. Every bean and the AbstractInjectConfiguration subclass are eligible for autowiring.
+
+Autowiring assigns by type. This is done by testing that the bean can be assigned to the autowired field. For example:
+
+    class ExampleClass {}
+    class ExampleSubClass extends ExampleClass {}
+    class ExampleMixin extends Object with ExampleClass {}
+
+    class Configuration extends AbstractInjectConfiguration {
+      @bean ExampleSubClass makeBean() => new ExampleSubClass();
+
+      // This will get autowired
+      @autowired ExampleClass field;
+
+      // This will NOT get autowired - ExampleSubClass is not assignable to ExampleMixin
+      @autowired ExampleMixin mixinField;
+    }
+
+When you define a method or setter as autowired all of the parameters will be set to the appropriate bean and then the method will be invoked. For example:
+
+    class Configuration extends AbstractInjectConfiguration {
+      @bean ExampleSubClass makeBean() => new ExampleSubClass();
+      @bean ExampleMixin makeMixin() => new ExampleMixin();
+
+      // This will get invoked with autowired arguments
+      @autowired void autowiredMethod(ExampleSubClass bean, ExampleMixin mixin) {}
+
+      // This will also get invoked with autowired arguments
+      @autowired set mixin(ExampleMixin mixin) {}
+
+      // This will NOT get invoked - both beans can be assigned to the parameter
+      @autowired void ambiguousMethod(ExampleClass bean) {}
+    }
+
+When there are multiple beans that can be assigned to an autowired field then the autowiring fails. If there are no beans then the autowiring also fails. When the autowiring fails an exception is thrown. If you want a field to be assigned only if a bean is available then you can set it to optional:
+
+    class Configuration extends AbstractInjectConfiguration {
+
+      // This will not get invoked - but that will not throw an exception
+      @Autowired(required: false) void missingBean(ExampleClass bean) {}
+    }
+
+When there are multiple beans that match a field you can indicate a preferred bean. This is covered in the next section.
+
 
 ### Being Specific with Primary and Qualifier
 
