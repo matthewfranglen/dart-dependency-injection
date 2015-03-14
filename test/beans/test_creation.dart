@@ -10,13 +10,24 @@ void testCreation() {
     .when("I call configure() on the configuration")
     .then("the bean is created")
     .test();
+
+  scenario
+    .given("a duplicate bean creating configuration")
+    .when("I call configure() on the configuration")
+    .then("the beans are created")
+    .test();
 }
 
 class _CreationSteps {
 
   @Given("a bean creating configuration")
-  void makeFieldConfiguration(Map<String, dynamic> context) {
-    _setConfiguration(context, new _CreationConfiguration());
+  void makeSingleConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _CreationSingleConfiguration());
+  }
+
+  @Given("a duplicate bean creating configuration")
+  void makeDuplicateConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _CreationDuplicateConfiguration());
   }
 
   @When("I call configure() on the configuration")
@@ -25,6 +36,7 @@ class _CreationSteps {
   }
 
   @Then("the bean is created")
+  @Then("the beans are created")
   void testBeanCreated(Map<String, dynamic> context) {
     expect(_getConfiguration(context).beanHasBeenCreated, isTrue);
   }

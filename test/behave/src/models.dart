@@ -82,7 +82,10 @@ class StepIndex {
   }
 
   Step getStep(String statement) {
-    return steps[statement];
+    if (steps.containsKey(statement)) {
+      return steps[statement];
+    }
+    throw new Exception("Method @${type}('${statement}') not defined");
   }
 
   static bool _isMethod(DeclarationMirror mirror) =>
@@ -93,11 +96,11 @@ class StepIndex {
 
   _MethodMirrorFunction _addStep(InstanceMirror mirror) =>
     (MethodMirror method) {
-    BehaveAnnotation annotation =
-        new DeclarationAnnotationFacade(method)
-          .getAnnotationsOf(type).first;
-
-      steps[annotation.value] = new Step(mirror, method);
+      new DeclarationAnnotationFacade(method)
+        .getAnnotationsOf(type)
+        .forEach((BehaveAnnotation annotation) {
+          steps[annotation.value] = new Step(mirror, method);
+        });
     };
 }
 
