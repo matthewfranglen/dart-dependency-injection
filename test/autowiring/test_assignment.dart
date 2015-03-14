@@ -6,23 +6,42 @@ void testAssignment() {
   scenario.load(new _AssignmentSteps());
 
   scenario
-    .given("a configuration")
+    .given("a field autowired configuration")
     .when("I call configure() on the configuration")
     .then("the bean is created")
+    .and("the bean is autowired")
     .test();
 
   scenario
-    .given("a configuration")
+    .given("a setter autowired configuration")
     .when("I call configure() on the configuration")
-    .then("the bean is autowired")
+    .then("the bean is created")
+    .and("the bean is autowired")
+    .test();
+
+  scenario
+    .given("a method autowired configuration")
+    .when("I call configure() on the configuration")
+    .then("the bean is created")
+    .and("the bean is autowired")
     .test();
 }
 
 class _AssignmentSteps {
 
-  @Given("a configuration")
-  void makeConfiguration(Map<String, dynamic> context) {
-    _setConfiguration(context, new _AssignmentConfiguration());
+  @Given("a field autowired configuration")
+  void makeFieldConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _AssignmentAutowireFieldConfiguration());
+  }
+
+  @Given("a setter autowired configuration")
+  void makeSetterConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _AssignmentAutowireSetterConfiguration());
+  }
+
+  @Given("a method autowired configuration")
+  void makeMethodConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _AssignmentAutowireMethodConfiguration());
   }
 
   @When("I call configure() on the configuration")
@@ -48,11 +67,52 @@ class _AssignmentSteps {
     context["configuration"];
 }
 
-class _AssignmentConfiguration extends AbstractInjectConfiguration {
+abstract class _AssignmentConfiguration extends AbstractInjectConfiguration {
+  bool get beanHasBeenCreated;
+  bool get beanHasBeenAutowired;
+}
+
+class _AssignmentAutowireFieldConfiguration extends _AssignmentConfiguration {
+
+  bool beanHasBeenCreated;
+
+  @autowired String mockBean;
+
+  _AssignmentAutowireFieldConfiguration()
+    : beanHasBeenCreated = false,
+      mockBean = null;
+
+  @bean String createBean() {
+    beanHasBeenCreated = true;
+    return 'bean';
+  }
+
+  bool get beanHasBeenAutowired => mockBean != null;
+}
+
+class _AssignmentAutowireSetterConfiguration extends _AssignmentConfiguration {
 
   bool beanHasBeenCreated, beanHasBeenAutowired;
 
-  _AssignmentConfiguration()
+  _AssignmentAutowireSetterConfiguration()
+    : beanHasBeenCreated = false,
+      beanHasBeenAutowired = false;
+
+  @bean String createBean() {
+    beanHasBeenCreated = true;
+    return 'bean';
+  }
+
+  @autowired set mockBean(String bean) {
+    beanHasBeenAutowired = true;
+  }
+}
+
+class _AssignmentAutowireMethodConfiguration extends _AssignmentConfiguration {
+
+  bool beanHasBeenCreated, beanHasBeenAutowired;
+
+  _AssignmentAutowireMethodConfiguration()
     : beanHasBeenCreated = false,
       beanHasBeenAutowired = false;
 

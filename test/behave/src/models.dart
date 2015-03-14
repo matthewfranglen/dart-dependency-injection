@@ -166,7 +166,7 @@ class GivenState extends BaseState with WhenMixin, ThenMixin {
     : super(scenario, previous, scenario.getStep(Given, statement), prefix, statement);
 
   GivenState and(String statement) =>
-    new GivenState(scenario, previous, "And", statement);
+    new GivenState(scenario, this, "And", statement);
 }
 
 class WhenState extends BaseState with ThenMixin {
@@ -175,7 +175,7 @@ class WhenState extends BaseState with ThenMixin {
     : super(scenario, previous, scenario.getStep(When, statement), prefix, statement);
 
   WhenState and(String statement) =>
-    new WhenState(scenario, previous, "And", statement);
+    new WhenState(scenario, this, "And", statement);
 }
 
 class ThenState extends BaseState {
@@ -184,7 +184,7 @@ class ThenState extends BaseState {
     : super(scenario, previous, scenario.getStep(Then, statement), prefix, statement);
 
   ThenState and(String statement) =>
-    new ThenState(scenario, previous, "And", statement);
+    new ThenState(scenario, this, "And", statement);
 }
 
 abstract class GivenMixin implements BaseState {
