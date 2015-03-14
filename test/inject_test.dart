@@ -7,33 +7,6 @@ final String nl = "\n     ";
 
 void main() {
 
-
-  group('Given a @Configuration class instance with ambiguous @Bean for @Autowired method${nl}', () {
-    AmbiguousAutowireConfiguration configuration;
-
-    setUp(() {
-      configuration = new AmbiguousAutowireConfiguration();
-    });
-    test('When I configure the instance${nl} Then an exception is thrown',
-      () {
-        expect(() => configuration.configure(), throws);
-      }
-    );
-  });
-
-  group('Given a @Configuration class instance with two matching @Bean types${nl}', () {
-    DuplicateBeanTypeConfiguration configuration;
-
-    setUp(() {
-      configuration = new DuplicateBeanTypeConfiguration();
-    });
-    test('When I configure the instance${nl} Then no exception is thrown',
-      () {
-        expect(() => configuration.configure(), returnsNormally);
-      }
-    );
-  });
-
   group('Given a @Configuration class instance with a @Primary @Bean and another matching @Bean${nl}', () {
     PrimaryAutowireConfiguration configuration;
 

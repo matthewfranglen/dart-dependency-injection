@@ -10,13 +10,24 @@ void testAssignmentFailures() {
     .when("I call configure() on the configuration")
     .then("an exception is thrown")
     .test();
+
+  scenario
+    .given("a configuration with two beans for an autowire")
+    .when("I call configure() on the configuration")
+    .then("an exception is thrown")
+    .test();
 }
 
 class _AssignmentFailureSteps {
 
   @Given("a configuration with an autowire that matches no bean")
-  void makeFieldConfiguration(Map<String, dynamic> context) {
+  void makeIncompatibleTypeConfiguration(Map<String, dynamic> context) {
     _setConfiguration(context, new _AssignmentFailureIncompatibleTypeConfiguration());
+  }
+
+  @Given("a configuration with two beans for an autowire")
+  void makeMultipleBeanConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _AssignmentFailureMultipleBeanConfiguration());
   }
 
   @When("I call configure() on the configuration")

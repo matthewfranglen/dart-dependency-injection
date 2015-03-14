@@ -7,22 +7,6 @@ abstract class MockConfiguration extends AbstractInjectConfiguration {
   bool get beanHasBeenAutowired;
 }
 
-class AmbiguousAutowireConfiguration extends AbstractInjectConfiguration {
-
-  @bean MockBean createBean() => new MockBean();
-
-  @bean MockBean createDuplicateBean() => new MockBean();
-
-  @autowired void autowireBean(MockBean bean) {}
-}
-
-class DuplicateBeanTypeConfiguration extends AbstractInjectConfiguration {
-
-  @bean MockBean createBean() => new MockBean();
-
-  @bean MockBean createDuplicateBean() => new MockBean();
-}
-
 class PrimaryAutowireConfiguration extends MockConfiguration {
 
   bool _primaryBeanHasBeenCreated, _beanHasBeenCreated, beanHasBeenAutowired;

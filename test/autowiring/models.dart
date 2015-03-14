@@ -88,4 +88,19 @@ class _AssignmentFailureIncompatibleTypeConfiguration extends AbstractInjectConf
   }
 }
 
+class _AssignmentFailureMultipleBeanConfiguration extends AbstractInjectConfiguration {
+
+  @autowired String field;
+
+  _AssignmentFailureMultipleBeanConfiguration() : field = null;
+
+  @bean String createBean() {
+    return 'bean';
+  }
+
+  @bean String createDuplicateBean() {
+    return 'bean';
+  }
+}
+
 // vim: set ai et sw=2 syntax=dart :
