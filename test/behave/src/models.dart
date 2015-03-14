@@ -1,13 +1,6 @@
 part of dependency_injection.test.behave;
 
-// A function like before and after
 typedef void ContextFunction(Map<String, dynamic> context);
-
-// A function which is part of the test chain.
-// The previous function links the chain of steps backwards, allowing tests such as expecting exceptions.
-// It is expected that every test will call previous.
-// The context object should be used to transmit state between steps.
-typedef void StepFunction(Map<String, dynamic> context, ContextFunction previous);
 
 typedef void _StepIndexFunction(StepIndex index);
 typedef void _MethodMirrorFunction(MethodMirror method);
@@ -118,13 +111,15 @@ class Step {
       _method = methodMirror;
 
   void invoke(Map<String, dynamic> context, ContextFunction previous) {
-    _instance.invoke(_method.simpleName, [context, previous]);
+    if (_method.parameters.length == 1) {
+      // Methods that don't take the previous argument just want it called prior to invocation
+      previous(context);
+      _instance.invoke(_method.simpleName, [context]);
+    }
+    else {
+      _instance.invoke(_method.simpleName, [context, previous]);
+    }
   }
-
-  StepFunction asStepFunction() =>
-    (Map<String, dynamic> context, ContextFunction previous) {
-      invoke(context, previous);
-    };
 
   ContextFunction asContextFunction(ContextFunction previous) =>
     (Map<String, dynamic> context) {

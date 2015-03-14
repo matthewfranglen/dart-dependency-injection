@@ -21,26 +21,22 @@ void testAssignment() {
 class _AssignmentSteps {
 
   @Given("a configuration")
-  void makeConfiguration(Map<String, dynamic> context, ContextFunction previous) {
-    previous(context);
+  void makeConfiguration(Map<String, dynamic> context) {
     _setConfiguration(context, new _AssignmentConfiguration());
   }
 
   @When("I call configure() on the configuration")
-  void callConfigure(Map<String, dynamic> context, ContextFunction previous) {
-    previous(context);
+  void callConfigure(Map<String, dynamic> context) {
     _getConfiguration(context).configure();
   }
 
   @Then("the bean is created")
-  void testBeanCreated(Map<String, dynamic> context, ContextFunction previous) {
-    previous(context);
+  void testBeanCreated(Map<String, dynamic> context) {
     expect(_getConfiguration(context).beanHasBeenCreated, isTrue);
   }
 
   @Then("the bean is autowired")
-  void testBeanAutowired(Map<String, dynamic> context, ContextFunction previous) {
-    previous(context);
+  void testBeanAutowired(Map<String, dynamic> context) {
     expect(_getConfiguration(context).beanHasBeenAutowired, isTrue);
   }
 
