@@ -118,6 +118,21 @@ class _AssignmentFailureMultiplePrimaryBeanConfiguration extends AbstractInjectC
   }
 }
 
+class _AssignmentFailureExceptionThrowingConfiguration extends AbstractInjectConfiguration {
+
+  @autowired String field;
+
+  _AssignmentFailureExceptionThrowingConfiguration();
+
+  @bean String createBean() {
+    return 'bean';
+  }
+
+  @autowired void autowireBean() {
+    throw new Exception();
+  }
+}
+
 class _PrimaryConfiguration extends AbstractInjectConfiguration {
 
   bool _primaryBeanHasBeenCreated, _beanHasBeenCreated, beanHasBeenAutowired;
@@ -141,6 +156,48 @@ class _PrimaryConfiguration extends AbstractInjectConfiguration {
 
   @autowired set method(String bean) {
     beanHasBeenAutowired = true;
+  }
+}
+
+abstract class _OptionalConfiguration extends AbstractInjectConfiguration {
+
+  bool get beanHasBeenAutowired;
+}
+
+class _OptionalNoBeanConfiguration extends _OptionalConfiguration {
+
+  @Autowired(required: false) String field;
+
+  bool get beanHasBeenAutowired => field != null;
+
+  _OptionalNoBeanConfiguration() : field = null;
+}
+
+class _OptionalDuplicateBeanConfiguration extends _OptionalConfiguration {
+
+  @Autowired(required: false) String field;
+
+  bool get beanHasBeenAutowired => field != null;
+
+  @bean String createBean() => 'bean';
+
+  @bean String createDuplicateBean() => 'duplicate bean';
+}
+
+class _OptionalValidConfiguration extends _OptionalConfiguration {
+
+  bool beanHasBeenCreated;
+
+  @Autowired(required: false) String field;
+
+  _OptionalValidConfiguration()
+    : beanHasBeenCreated = false;
+
+  bool get beanHasBeenAutowired => field != null;
+
+  @bean String createBean() {
+    beanHasBeenCreated = true;
+    return 'bean';
   }
 }
 

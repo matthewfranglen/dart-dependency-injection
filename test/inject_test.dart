@@ -7,59 +7,6 @@ final String nl = "\n     ";
 
 void main() {
 
-  group('Given a @Configuration class instance with an exception throwing @Autowired${nl}', () {
-    ExceptionThrowingAutowireConfiguration configuration;
-
-    setUp(() {
-      configuration = new ExceptionThrowingAutowireConfiguration();
-    });
-    test('When I configure the instance${nl} Then an exception is thrown',
-      () {
-        expect(() => configuration.configure(), throws);
-      }
-    );
-  });
-
-  group('Given a @Configuration class instance with an optional @Autowired and no @Bean instances${nl}', () {
-    OptionalAutowireConfiguration configuration;
-
-    setUp(() {
-      configuration = new OptionalAutowireConfiguration();
-    });
-    test('When I configure the instance${nl} Then no exception is thrown',
-      () {
-        expect(() => configuration.configure(), returnsNormally);
-      }
-    );
-  });
-
-  group('Given a @Configuration class instance with an optional @Autowired and multiple @Bean instances${nl}', () {
-    DuplicateOptionalAutowireConfiguration configuration;
-
-    setUp(() {
-      configuration = new DuplicateOptionalAutowireConfiguration();
-    });
-    test('When I configure the instance${nl} Then no exception is thrown',
-      () {
-        expect(() => configuration.configure(), returnsNormally);
-      }
-    );
-  });
-
-  group('Given a @Configuration class instance with an optional @Autowired and one @Bean${nl}', () {
-    ValidOptionalAutowiredBeanConfiguration configuration;
-
-    setUp(() {
-      configuration = new ValidOptionalAutowiredBeanConfiguration();
-    });
-    test('When I configure the instance${nl} Then the bean is created',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenCreated)
-    );
-    test('When I configure the instance${nl} Then the bean is autowired',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenAutowired)
-    );
-  });
-
   group('Given a @Configuration class instance with a @Qualifier @Autowired method and multiple @Bean instances with one named${nl}', () {
     QualifierAutowiredBeanConfiguration configuration;
 

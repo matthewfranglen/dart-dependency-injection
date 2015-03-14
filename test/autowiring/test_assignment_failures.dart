@@ -22,6 +22,12 @@ void testAssignmentFailures() {
     .when("I call configure() on the configuration")
     .then("an exception is thrown")
     .test();
+
+  scenario
+    .given("a configuration with an exception throwing autowire method")
+    .when("I call configure() on the configuration")
+    .then("an exception is thrown")
+    .test();
 }
 
 class _AssignmentFailureSteps {
@@ -41,13 +47,18 @@ class _AssignmentFailureSteps {
     _setConfiguration(context, new _AssignmentFailureMultiplePrimaryBeanConfiguration());
   }
 
+  @Given("a configuration with an exception throwing autowire method")
+  void makeExceptionThrowingConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _AssignmentFailureExceptionThrowingConfiguration());
+  }
+
   @When("I call configure() on the configuration")
   void callConfigure(Map<String, dynamic> context) {
     _getConfiguration(context).configure();
   }
 
   @Then("an exception is thrown")
-  void testBeanCreated(Map<String, dynamic> context, ContextFunction previous) {
+  void testExceptionThrown(Map<String, dynamic> context, ContextFunction previous) {
     expect(() => previous(context), throws);
   }
 

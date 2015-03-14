@@ -52,6 +52,11 @@ class _CreationSteps {
     expect(_getConfiguration(context).beanHasBeenCreated, isTrue);
   }
 
+  @Then("an exception is thrown")
+  void testExceptionThrown(Map<String, dynamic> context, ContextFunction previous) {
+    expect(() => previous(context), throws);
+  }
+
   void _setConfiguration(Map<String, dynamic> context, _CreationConfiguration configuration) {
     context["configuration"] = configuration;
   }

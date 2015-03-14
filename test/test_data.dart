@@ -7,52 +7,6 @@ abstract class MockConfiguration extends AbstractInjectConfiguration {
   bool get beanHasBeenAutowired;
 }
 
-class ExceptionThrowingBeanConfiguration extends AbstractInjectConfiguration {
-
-  @bean MockBean createBean() => throw new Exception();
-}
-
-class ExceptionThrowingAutowireConfiguration extends AbstractInjectConfiguration {
-
-  @bean MockBean createBean() => new MockBean();
-
-  @autowired void autowireBean(MockBean bean) {
-    throw new Exception();
-  }
-}
-
-class OptionalAutowireConfiguration extends AbstractInjectConfiguration {
-
-  @Autowired(required: false) void autowireBean(MockBean bean) {}
-}
-
-class DuplicateOptionalAutowireConfiguration extends AbstractInjectConfiguration {
-
-  @bean MockBean createBean() => new MockBean();
-
-  @bean MockBean createDuplicateBean() => new MockBean();
-
-  @Autowired(required: false) void autowireBean(MockBean bean) {}
-}
-
-class ValidOptionalAutowiredBeanConfiguration extends MockConfiguration {
-
-  bool beanHasBeenCreated, beanHasBeenAutowired;
-
-  ValidOptionalAutowiredBeanConfiguration()
-    : beanHasBeenCreated = false,
-      beanHasBeenAutowired = false;
-
-  @bean MockBean createBean() {
-    beanHasBeenCreated = true;
-    return new MockBean();
-  }
-
-  @Autowired(required: false) void autowireBean(MockBean bean) {
-    beanHasBeenAutowired = true;
-  }
-}
-
 class QualifierAutowiredBeanConfiguration extends MockConfiguration {
 
   bool _qualifiedBeanHasBeenCreated, _beanHasBeenCreated, beanHasBeenAutowired;
