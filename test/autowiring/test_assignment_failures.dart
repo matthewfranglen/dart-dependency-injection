@@ -16,6 +16,12 @@ void testAssignmentFailures() {
     .when("I call configure() on the configuration")
     .then("an exception is thrown")
     .test();
+
+  scenario
+    .given("a configuration with two primary beans for an autowire")
+    .when("I call configure() on the configuration")
+    .then("an exception is thrown")
+    .test();
 }
 
 class _AssignmentFailureSteps {
@@ -28,6 +34,11 @@ class _AssignmentFailureSteps {
   @Given("a configuration with two beans for an autowire")
   void makeMultipleBeanConfiguration(Map<String, dynamic> context) {
     _setConfiguration(context, new _AssignmentFailureMultipleBeanConfiguration());
+  }
+
+  @Given("a configuration with two primary beans for an autowire")
+  void makeMultiplePrimaryBeanConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _AssignmentFailureMultiplePrimaryBeanConfiguration());
   }
 
   @When("I call configure() on the configuration")

@@ -14,6 +14,7 @@ part 'test_value.dart';
 void test() {
   testAssignment();
   testAssignmentFailures();
+  testPrimary();
 }
 
 // vim: set ai et sw=2 syntax=dart :

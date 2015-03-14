@@ -16,6 +16,12 @@ void testCreation() {
     .when("I call configure() on the configuration")
     .then("the beans are created")
     .test();
+
+  scenario
+    .given("an exception throwing configuration")
+    .when("I call configure() on the configuration")
+    .then("an exception is thrown")
+    .test();
 }
 
 class _CreationSteps {
@@ -30,9 +36,14 @@ class _CreationSteps {
     _setConfiguration(context, new _CreationDuplicateConfiguration());
   }
 
+  @Given("an exception throwing configuration")
+  void makeExceptionThrowingConfiguration(Map<String, dynamic> context) {
+    context["configuration"] = new _CreationExceptionThrowingConfiguration();
+  }
+
   @When("I call configure() on the configuration")
   void callConfigure(Map<String, dynamic> context) {
-    _getConfiguration(context).configure();
+    (context["configuration"] as AbstractInjectConfiguration).configure();
   }
 
   @Then("the bean is created")

@@ -7,51 +7,6 @@ final String nl = "\n     ";
 
 void main() {
 
-  group('Given a @Configuration class instance with a @Primary @Bean and another matching @Bean${nl}', () {
-    PrimaryAutowireConfiguration configuration;
-
-    setUp(() {
-      configuration = new PrimaryAutowireConfiguration();
-    });
-    test('When I configure the instance${nl} Then no exception is thrown',
-      () {
-        expect(() => configuration.configure(), returnsNormally);
-      }
-    );
-    test('When I configure the instance${nl} Then the beans are created',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenCreated)
-    );
-    test('When I configure the instance${nl} Then the bean is autowired',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenAutowired)
-    );
-  });
-
-  group('Given a @Configuration class instance with two matching @Primary @Bean types${nl}', () {
-    DuplicatePrimaryAutowireConfiguration configuration;
-
-    setUp(() {
-      configuration = new DuplicatePrimaryAutowireConfiguration();
-    });
-    test('When I configure the instance${nl} Then an exception is thrown',
-      () {
-        expect(() => configuration.configure(), throws);
-      }
-    );
-  });
-
-  group('Given a @Configuration class instance with an exception throwing @Bean${nl}', () {
-    ExceptionThrowingBeanConfiguration configuration;
-
-    setUp(() {
-      configuration = new ExceptionThrowingBeanConfiguration();
-    });
-    test('When I configure the instance${nl} Then an exception is thrown',
-      () {
-        expect(() => configuration.configure(), throws);
-      }
-    );
-  });
-
   group('Given a @Configuration class instance with an exception throwing @Autowired${nl}', () {
     ExceptionThrowingAutowireConfiguration configuration;
 

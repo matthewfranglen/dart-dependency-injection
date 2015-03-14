@@ -103,4 +103,45 @@ class _AssignmentFailureMultipleBeanConfiguration extends AbstractInjectConfigur
   }
 }
 
+class _AssignmentFailureMultiplePrimaryBeanConfiguration extends AbstractInjectConfiguration {
+
+  @autowired String field;
+
+  _AssignmentFailureMultiplePrimaryBeanConfiguration() : field = null;
+
+  @bean @primary String createBean() {
+    return 'primary bean';
+  }
+
+  @bean @primary String createDuplicateBean() {
+    return 'primary bean';
+  }
+}
+
+class _PrimaryConfiguration extends AbstractInjectConfiguration {
+
+  bool _primaryBeanHasBeenCreated, _beanHasBeenCreated, beanHasBeenAutowired;
+
+  _PrimaryConfiguration()
+    : _primaryBeanHasBeenCreated = false,
+      _beanHasBeenCreated = false,
+      beanHasBeenAutowired = false;
+
+  bool get beanHasBeenCreated => _primaryBeanHasBeenCreated && _beanHasBeenCreated;
+
+  @bean @primary String createBean() {
+    _primaryBeanHasBeenCreated = true;
+    return 'primary bean';
+  }
+
+  @bean String createDuplicateBean() {
+    _beanHasBeenCreated = true;
+    return 'bean';
+  }
+
+  @autowired set method(String bean) {
+    beanHasBeenAutowired = true;
+  }
+}
+
 // vim: set ai et sw=2 syntax=dart :

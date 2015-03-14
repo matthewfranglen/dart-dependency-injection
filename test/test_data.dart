@@ -7,43 +7,6 @@ abstract class MockConfiguration extends AbstractInjectConfiguration {
   bool get beanHasBeenAutowired;
 }
 
-class PrimaryAutowireConfiguration extends MockConfiguration {
-
-  bool _primaryBeanHasBeenCreated, _beanHasBeenCreated, beanHasBeenAutowired;
-
-  PrimaryAutowireConfiguration()
-    : _primaryBeanHasBeenCreated = false,
-      _beanHasBeenCreated = false,
-      beanHasBeenAutowired = false;
-
-  bool get beanHasBeenCreated => _primaryBeanHasBeenCreated && _beanHasBeenCreated;
-
-  @bean @primary MockBean createBean() {
-    _primaryBeanHasBeenCreated = true;
-    return new MockBean();
-  }
-
-  @bean MockBean createDuplicateBean() {
-    _beanHasBeenCreated = true;
-    return new MockBean();
-  }
-
-  @autowired set mockBean(MockBean bean) {
-    beanHasBeenAutowired = true;
-  }
-}
-
-class DuplicatePrimaryAutowireConfiguration extends AbstractInjectConfiguration {
-
-  DuplicatePrimaryAutowireConfiguration();
-
-  @bean @primary MockBean createBean() => new MockBean();
-
-  @bean @primary MockBean createDuplicateBean() => new MockBean();
-
-  @autowired set mockBean(MockBean bean) {}
-}
-
 class ExceptionThrowingBeanConfiguration extends AbstractInjectConfiguration {
 
   @bean MockBean createBean() => throw new Exception();

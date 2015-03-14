@@ -37,4 +37,8 @@ class _CreationDuplicateConfiguration extends _CreationConfiguration {
   }
 }
 
+class _CreationExceptionThrowingConfiguration extends AbstractInjectConfiguration {
+  @bean String createBean() => throw new Exception();
+}
+
 // vim: set ai et sw=2 syntax=dart :
