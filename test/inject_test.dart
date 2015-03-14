@@ -6,74 +6,7 @@ import 'test_data.dart';
 final String nl = "\n     ";
 
 void main() {
-  group('Given a @Configuration class instance${nl}', () {
-    AutowiredBeanConfiguration configuration;
 
-    setUp(() {
-      configuration = new AutowiredBeanConfiguration();
-    });
-    test('When I configure the instance${nl} Then the bean is created',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenCreated)
-    );
-    test('When I configure the instance${nl} Then the bean is autowired',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenAutowired)
-    );
-  });
-
-  group('Given a @Configuration class instance with an @Autowired setter${nl}', () {
-    AutowiredSetterConfiguration configuration;
-
-    setUp(() {
-      configuration = new AutowiredSetterConfiguration();
-    });
-    test('When I configure the instance${nl} Then the bean is created',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenCreated)
-    );
-    test('When I configure the instance${nl} Then the bean is autowired',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenAutowired)
-    );
-  });
-
-  group('Given a @Configuration class instance with an @Autowired field${nl}', () {
-    AutowiredFieldConfiguration configuration;
-
-    setUp(() {
-      configuration = new AutowiredFieldConfiguration();
-    });
-    test('When I configure the instance${nl} Then the bean is created',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenCreated)
-    );
-    test('When I configure the instance${nl} Then the bean is autowired',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenAutowired)
-    );
-  });
-
-  group('Given a @Configuration class instance with an @Autowired field and a @Bean method with misleading return type${nl}', () {
-    LooseMethodTypeAutowireConfiguration configuration;
-
-    setUp(() {
-      configuration = new LooseMethodTypeAutowireConfiguration();
-    });
-    test('When I configure the instance${nl} Then the bean is created',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenCreated)
-    );
-    test('When I configure the instance${nl} Then the bean is autowired',
-      () => when(triggerConfiguration(configuration)).then(beansHaveBeenAutowired)
-    );
-  });
-
-  group('Given a @Configuration class instance with different @Bean type for @Autowired method${nl}', () {
-    DifferentAutowireConfiguration configuration;
-
-    setUp(() {
-      configuration = new DifferentAutowireConfiguration();
-    });
-    test('When I configure the instance${nl} Then an exception is thrown',
-      () {
-        expect(() => configuration.configure(), throws);
-      }
-    );
-  });
 
   group('Given a @Configuration class instance with ambiguous @Bean for @Autowired method${nl}', () {
     AmbiguousAutowireConfiguration configuration;
