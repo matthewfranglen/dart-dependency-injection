@@ -11,8 +11,9 @@ typedef void StepFunction(Map<String, dynamic> context, ContextFunction previous
 
 typedef void _StepIndexFunction(StepIndex index);
 typedef void _MethodMirrorFunction(MethodMirror method);
+typedef void _ContextFunctionFunction(ContextFunction function);
 
-class Scenario {
+class Scenario extends Object with GivenMixin, WhenMixin, ThenMixin {
 
   final Map<Type, StepIndex> _stepIndexByType;
   final List<ContextFunction> _before, _after;
@@ -33,12 +34,25 @@ class Scenario {
     _stepIndexByType.values.forEach(_loadIntoIndex(instance));
   }
 
-  ContextFunction asPrevious() =>
+  ContextFunction asContextFunction() =>
     (Map<String, dynamic> context) {};
+
+  void test(BaseState test) {
+    Map<String, dynamic> context = {};
+
+    _before.forEach(_invokeContextFunction(context));
+    text.asContextFunction();
+    _after.forEach(_invokeContextFunction(context));
+  }
 
   _StepIndexFunction _loadIntoIndex(Object instance) =>
     (StepIndex index) {
       index.load(instance);
+    };
+
+  _ContextFunctionFunction _invokeContextFunction(Map<String, dynamic> context) =>
+    (ContextFunction function) {
+      function(context);
     };
 }
 
@@ -107,8 +121,12 @@ class BaseState {
 
   BaseState(this.scenario, this.previous, this.step);
 
-  ContextFunction asPrevious() =>
+  ContextFunction asContextFunction() =>
     step.asContextFunction(previous);
+
+  void test() {
+    scenario.test(this);
+  }
 }
 
 class GivenState extends BaseState with WhenMixin, ThenMixin {
@@ -117,9 +135,7 @@ class GivenState extends BaseState with WhenMixin, ThenMixin {
     : super(scenario, previous, scenario.getStep(Given, statement));
 
   GivenState and(String statement) =>
-    new GivenState(scenario, asPrevious(), statement);
-
-  void test() {}
+    new GivenState(scenario, asContextFunction(), statement);
 }
 
 class WhenState extends BaseState with ThenMixin {
@@ -128,9 +144,7 @@ class WhenState extends BaseState with ThenMixin {
     : super(scenario, previous, scenario.getStep(Given, statement));
 
   WhenState and(String statement) =>
-    new WhenState(scenario, asPrevious(), statement);
-
-  void test() {}
+    new WhenState(scenario, asContextFunction(), statement);
 }
 
 class ThenState extends BaseState {
@@ -139,19 +153,17 @@ class ThenState extends BaseState {
     : super(scenario, previous, scenario.getStep(Given, statement));
 
   ThenState and(String statement) =>
-    new ThenState(scenario, asPrevious(), statement);
-
-  void test() {}
+    new ThenState(scenario, asContextFunction(), statement);
 }
 
 abstract class GivenMixin {
 
   Scenario get scenario;
 
-  ContextFunction asPrevious();
+  ContextFunction asContextFunction();
 
   GivenState given(String statement) =>
-    new GivenState(scenario, asPrevious(), statement);
+    new GivenState(scenario, asContextFunction(), statement);
 }
 
 abstract class WhenMixin {
@@ -160,11 +172,11 @@ abstract class WhenMixin {
   ContextFunction get previous;
   Step get step;
 
-  ContextFunction asPrevious() =>
+  ContextFunction asContextFunction() =>
     step.asContextFunction(previous);
 
   WhenState when(String statement) =>
-    new WhenState(scenario, asPrevious(), statement);
+    new WhenState(scenario, asContextFunction(), statement);
 }
 
 abstract class ThenMixin {
@@ -173,11 +185,11 @@ abstract class ThenMixin {
   ContextFunction get previous;
   Step get step;
 
-  ContextFunction asPrevious() =>
+  ContextFunction asContextFunction() =>
     step.asContextFunction(previous);
 
   ThenState then(String statement) =>
-    new ThenState(scenario, asPrevious(), statement);
+    new ThenState(scenario, asContextFunction(), statement);
 }
 
 // vim: set ai et sw=2 syntax=dart :
