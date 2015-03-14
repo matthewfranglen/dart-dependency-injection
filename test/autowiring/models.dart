@@ -133,30 +133,31 @@ class _AssignmentFailureExceptionThrowingConfiguration extends AbstractInjectCon
   }
 }
 
-class _PrimaryConfiguration extends AbstractInjectConfiguration {
+class _AssignmentFailureQualifiedDuplicateConfiguration extends AbstractInjectConfiguration {
 
-  bool _primaryBeanHasBeenCreated, _beanHasBeenCreated, beanHasBeenAutowired;
+  @Bean(name: "bean") String createBean() => 'bean';
 
-  _PrimaryConfiguration()
-    : _primaryBeanHasBeenCreated = false,
-      _beanHasBeenCreated = false,
-      beanHasBeenAutowired = false;
+  @Bean(name: "bean") String createDuplicateBean() => 'bean';
 
-  bool get beanHasBeenCreated => _primaryBeanHasBeenCreated && _beanHasBeenCreated;
+  @autowired void setBean(@Qualifier("bean") String bean) {}
+}
 
-  @bean @primary String createBean() {
-    _primaryBeanHasBeenCreated = true;
-    return 'primary bean';
-  }
+class _AssignmentFailureQualifiedDuplicateImplicitConfiguration extends AbstractInjectConfiguration {
 
-  @bean String createDuplicateBean() {
-    _beanHasBeenCreated = true;
-    return 'bean';
-  }
+  @bean String getBean() => 'bean';
 
-  @autowired set method(String bean) {
-    beanHasBeenAutowired = true;
-  }
+  @Bean(name: "bean") String createDuplicateBean() => 'bean';
+
+  @autowired void setBean(@Qualifier("bean") String bean) {}
+}
+
+class _AssignmentFailureQualifiedDuplicatePrimaryConfiguration extends AbstractInjectConfiguration {
+
+  @Bean(name: "bean") @primary String createBean() => 'bean';
+
+  @Bean(name: "bean") @primary String createDuplicateBean() => 'bean';
+
+  @autowired void setBean(@Qualifier("bean") String bean) {}
 }
 
 abstract class _OptionalConfiguration extends AbstractInjectConfiguration {
@@ -198,6 +199,89 @@ class _OptionalValidConfiguration extends _OptionalConfiguration {
   @bean String createBean() {
     beanHasBeenCreated = true;
     return 'bean';
+  }
+}
+
+class _PrimaryConfiguration extends AbstractInjectConfiguration {
+
+  bool _primaryBeanHasBeenCreated, _beanHasBeenCreated, beanHasBeenAutowired;
+
+  _PrimaryConfiguration()
+    : _primaryBeanHasBeenCreated = false,
+      _beanHasBeenCreated = false,
+      beanHasBeenAutowired = false;
+
+  bool get beanHasBeenCreated => _primaryBeanHasBeenCreated && _beanHasBeenCreated;
+
+  @bean @primary String createBean() {
+    _primaryBeanHasBeenCreated = true;
+    return 'primary bean';
+  }
+
+  @bean String createDuplicateBean() {
+    _beanHasBeenCreated = true;
+    return 'bean';
+  }
+
+  @autowired set method(String bean) {
+    beanHasBeenAutowired = true;
+  }
+}
+
+abstract class _QualifiedConfiguration extends AbstractInjectConfiguration {
+  bool get beanHasBeenCreated;
+  bool get beanHasBeenAutowired;
+}
+
+class _QualifiedNamedConfiguration extends _QualifiedConfiguration {
+
+  bool _qualifiedBeanHasBeenCreated, _beanHasBeenCreated, beanHasBeenAutowired;
+
+  _QualifiedNamedConfiguration()
+    : _qualifiedBeanHasBeenCreated = false,
+      _beanHasBeenCreated = false,
+      beanHasBeenAutowired = false;
+
+  bool get beanHasBeenCreated => _qualifiedBeanHasBeenCreated && _beanHasBeenCreated;
+
+  @Bean(name: "bean") String createBean() {
+    _qualifiedBeanHasBeenCreated = true;
+    return 'named bean';
+  }
+
+  @bean String createDuplicateBean() {
+    _beanHasBeenCreated = true;
+    return 'bean';
+  }
+
+  @autowired set method(@Qualifier("bean") String bean) {
+    beanHasBeenAutowired = true;
+  }
+}
+
+class _QualifiedPrimaryConfiguration extends _QualifiedConfiguration {
+
+  bool _primaryQualifiedBeanHasBeenCreated, _beanHasBeenCreated, beanHasBeenAutowired;
+
+  _QualifiedPrimaryConfiguration()
+    : _primaryQualifiedBeanHasBeenCreated = false,
+      _beanHasBeenCreated = false,
+      beanHasBeenAutowired = false;
+
+  bool get beanHasBeenCreated => _primaryQualifiedBeanHasBeenCreated && _beanHasBeenCreated;
+
+  @Bean(name: "bean") @primary String createBean() {
+    _primaryQualifiedBeanHasBeenCreated = true;
+    return 'primary named bean';
+  }
+
+  @Bean(name: "bean") String createDuplicateBean() {
+    _beanHasBeenCreated = true;
+    return 'named bean';
+  }
+
+  @autowired void setBean(@Qualifier("bean") String bean) {
+    beanHasBeenAutowired = true;
   }
 }
 

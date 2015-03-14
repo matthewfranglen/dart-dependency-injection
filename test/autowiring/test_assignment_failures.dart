@@ -28,6 +28,24 @@ void testAssignmentFailures() {
     .when("I call configure() on the configuration")
     .then("an exception is thrown")
     .test();
+
+  scenario
+    .given("a qualified autowired configuration with two named beans")
+    .when("I call configure() on the configuration")
+    .then("an exception is thrown")
+    .test();
+
+  scenario
+    .given("a qualified autowired configuration with named and implicitly named beans")
+    .when("I call configure() on the configuration")
+    .then("an exception is thrown")
+    .test();
+
+  scenario
+    .given("a qualified autowired configuration with two named primary beans")
+    .when("I call configure() on the configuration")
+    .then("an exception is thrown")
+    .test();
 }
 
 class _AssignmentFailureSteps {
@@ -50,6 +68,21 @@ class _AssignmentFailureSteps {
   @Given("a configuration with an exception throwing autowire method")
   void makeExceptionThrowingConfiguration(Map<String, dynamic> context) {
     _setConfiguration(context, new _AssignmentFailureExceptionThrowingConfiguration());
+  }
+
+  @Given("a qualified autowired configuration with two named beans")
+  void makeQualifiedDuplicateConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _AssignmentFailureQualifiedDuplicateConfiguration());
+  }
+
+  @Given("a qualified autowired configuration with named and implicitly named beans")
+  void makeQualifiedDuplicateImplicitConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _AssignmentFailureQualifiedDuplicateImplicitConfiguration());
+  }
+
+  @Given("a qualified autowired configuration with two named primary beans")
+  void makeQualifiedDuplicatePrimaryConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _AssignmentFailureQualifiedDuplicatePrimaryConfiguration());
   }
 
   @When("I call configure() on the configuration")

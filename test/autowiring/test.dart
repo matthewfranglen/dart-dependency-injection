@@ -17,6 +17,7 @@ void test() {
   testAssignmentFailures();
   testOptional();
   testPrimary();
+  testQualifier();
 }
 
 // vim: set ai et sw=2 syntax=dart :
