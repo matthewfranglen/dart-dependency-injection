@@ -1,18 +1,18 @@
 part of dependency_injection.test.autowiring;
 
 void testQualifier() {
-  Scenario scenario = new Scenario("Autowired fields prefer primary beans");
+  Feature feature = new Feature("Autowired fields prefer primary beans");
 
-  scenario.load(new _QualifierSteps());
+  feature.load(new _QualifierSteps());
 
-  scenario
+  feature.scenario("A qualified autowire and a named bean")
     .given("a qualified autowired configuration with two beans, one of which is named")
     .when("I call configure() on the configuration")
     .then("the beans are created")
     .and("the bean is autowired")
     .test();
 
-  scenario
+  feature.scenario("A qualified autowire and a named primary bean")
     .given("a qualified autowired configuration with two named beans, one of which is primary")
     .when("I call configure() on the configuration")
     .then("the beans are created")

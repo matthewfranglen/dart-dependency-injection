@@ -1,25 +1,25 @@
 part of dependency_injection.test.autowiring;
 
 void testOptional() {
-  Scenario scenario = new Scenario("Optional autowired fields can be skipped");
+  Feature feature = new Feature("Optional autowired fields can be skipped");
 
-  scenario.load(new _OptionalSteps());
+  feature.load(new _OptionalSteps());
 
-  scenario
+  feature.scenario("An optional autowire and no beans")
     .given("a configuration with an optional autowire and no assignable beans")
     .when("I call configure() on the configuration")
     .then("no exception is thrown")
     .and("the bean is not autowired")
     .test();
 
-  scenario
+  feature.scenario("An optional autowire and two beans")
     .given("a configuration with an optional autowire and two assignable beans")
     .when("I call configure() on the configuration")
     .then("no exception is thrown")
     .and("the bean is not autowired")
     .test();
 
-  scenario
+  feature.scenario("An optional autowire and one bean")
     .given("a configuration with an optional autowire and an assignable bean")
     .when("I call configure() on the configuration")
     .then("the bean is created")

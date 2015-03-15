@@ -1,11 +1,11 @@
 part of dependency_injection.test.autowiring;
 
 void testPrimary() {
-  Scenario scenario = new Scenario("Autowired fields prefer primary beans");
+  Feature feature = new Feature("Autowired fields prefer primary beans");
 
-  scenario.load(new _PrimarySteps());
+  feature.load(new _PrimarySteps());
 
-  scenario
+  feature.scenario("A primary bean overriding a plain bean")
     .given("an autowired configuration with two beans, one of which is primary")
     .when("I call configure() on the configuration")
     .then("the beans are created")

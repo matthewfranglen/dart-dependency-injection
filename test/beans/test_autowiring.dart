@@ -1,25 +1,25 @@
 part of dependency_injection.test.beans;
 
 void testAutowiring() {
-  Scenario scenario = new Scenario("Beans are autowired");
+  Feature feature = new Feature("Beans are autowired");
 
-  scenario.load(new _AutowiringSteps());
+  feature.load(new _AutowiringSteps());
 
-  scenario
+  feature.scenario("A bean with an autowired field")
     .given("a configuration with a bean that has an autowired field")
     .when("I call configure() on the configuration")
     .then("the bean is created")
     .and("the bean is internally autowired")
     .test();
 
-  scenario
+  feature.scenario("A bean with an autowired setter")
     .given("a configuration with a bean that has an autowired setter")
     .when("I call configure() on the configuration")
     .then("the bean is created")
     .and("the bean is internally autowired")
     .test();
 
-  scenario
+  feature.scenario("A bean with an autowired method")
     .given("a configuration with a bean that has an autowired method")
     .when("I call configure() on the configuration")
     .then("the bean is created")

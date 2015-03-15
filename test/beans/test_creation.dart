@@ -1,23 +1,23 @@
 part of dependency_injection.test.beans;
 
 void testCreation() {
-  Scenario scenario = new Scenario("Beans are created");
+  Feature feature = new Feature("Beans are created");
 
-  scenario.load(new _CreationSteps());
+  feature.load(new _CreationSteps());
 
-  scenario
+  feature.scenario("Creating a bean")
     .given("a bean creating configuration")
     .when("I call configure() on the configuration")
     .then("the bean is created")
     .test();
 
-  scenario
+  feature.scenario("Creating duplicate beans")
     .given("a duplicate bean creating configuration")
     .when("I call configure() on the configuration")
     .then("the beans are created")
     .test();
 
-  scenario
+  feature.scenario("An exception throwing bean")
     .given("an exception throwing configuration")
     .when("I call configure() on the configuration")
     .then("an exception is thrown")

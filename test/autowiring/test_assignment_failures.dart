@@ -1,47 +1,47 @@
 part of dependency_injection.test.autowiring;
 
 void testAssignmentFailures() {
-  Scenario scenario = new Scenario("Autowiring beans can fail");
+  Feature feature = new Feature("Autowiring beans can fail");
 
-  scenario.load(new _AssignmentFailureSteps());
+  feature.load(new _AssignmentFailureSteps());
 
-  scenario
+  feature.scenario("An autowire with no bean")
     .given("a configuration with an autowire that matches no bean")
     .when("I call configure() on the configuration")
     .then("an exception is thrown")
     .test();
 
-  scenario
+  feature.scenario("An autowire with two beans")
     .given("a configuration with two beans for an autowire")
     .when("I call configure() on the configuration")
     .then("an exception is thrown")
     .test();
 
-  scenario
+  feature.scenario("An autowire with two primary beans")
     .given("a configuration with two primary beans for an autowire")
     .when("I call configure() on the configuration")
     .then("an exception is thrown")
     .test();
 
-  scenario
+  feature.scenario("An autowire that throws an exception")
     .given("a configuration with an exception throwing autowire method")
     .when("I call configure() on the configuration")
     .then("an exception is thrown")
     .test();
 
-  scenario
+  feature.scenario("A qualified autowire with two named beans")
     .given("a qualified autowired configuration with two named beans")
     .when("I call configure() on the configuration")
     .then("an exception is thrown")
     .test();
 
-  scenario
+  feature.scenario("A qualified autowire with two named beans")
     .given("a qualified autowired configuration with named and implicitly named beans")
     .when("I call configure() on the configuration")
     .then("an exception is thrown")
     .test();
 
-  scenario
+  feature.scenario("A qualified autowire with two named primary beans")
     .given("a qualified autowired configuration with two named primary beans")
     .when("I call configure() on the configuration")
     .then("an exception is thrown")

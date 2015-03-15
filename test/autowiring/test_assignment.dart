@@ -1,32 +1,32 @@
 part of dependency_injection.test.autowiring;
 
 void testAssignment() {
-  Scenario scenario = new Scenario("Autowired fields, setters and methods are set");
+  Feature feature = new Feature("Autowired fields, setters and methods are set");
 
-  scenario.load(new _AssignmentSteps());
+  feature.load(new _AssignmentSteps());
 
-  scenario
+  feature.scenario("An autowired field")
     .given("a field autowired configuration")
     .when("I call configure() on the configuration")
     .then("the bean is created")
     .and("the bean is autowired")
     .test();
 
-  scenario
+  feature.scenario("An autowired setter")
     .given("a setter autowired configuration")
     .when("I call configure() on the configuration")
     .then("the bean is created")
     .and("the bean is autowired")
     .test();
 
-  scenario
+  feature.scenario("An autowired method")
     .given("a method autowired configuration")
     .when("I call configure() on the configuration")
     .then("the bean is created")
     .and("the bean is autowired")
     .test();
 
-  scenario
+  feature.scenario("An autowired type which is a superclass of the available bean")
     .given("an autowired configuration where the type is permissive")
     .when("I call configure() on the configuration")
     .then("the bean is created")
