@@ -1,10 +1,12 @@
 name: dependency_injection
-version: 0.0.2
+version: 0.0.3
 author: Matthew Franglen <matthew.franglen@gmail.com>
 homepage: https://github.com/matthewfranglen/dart-dependency-injection
 description: Spring style annotation driven dependency injection
 dependencies:
   patch_mirrors: ">=0.0.1 <0.1.0"
   annotate: ">=0.0.1 <0.1.0"
+  behave:
+    git: git@github.com:matthewfranglen/dart-behave.git
 dev_dependencies:
   unittest: any
