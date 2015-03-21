@@ -64,14 +64,31 @@ class BeanLoader {
 
   BeanLoader.fromObject(Object configuration) : this(reflect(configuration));
 
-  BeanLoader(InstanceMirror configuration)
-    : _beansAwaitingConstruction =
-        configuration.type.declarations.values
-          .where(_isMethod)
-          .map(_castToMethodMirror)
-          .where(DeclarationAnnotationFacade.filterByAnnotation(Bean))
-          .map(_makeBeanMethod(configuration))
-          .toList();
+  BeanLoader(InstanceMirror configuration) :
+    _beansAwaitingConstruction = [] {
+      _findBeansAwaitingConstruction(configuration, configuration.type);
+  }
+
+  void _findBeansAwaitingConstruction(InstanceMirror configuration, ClassMirror type) {
+    if (_isNotMixinEnhanced(type)) {
+      type.declarations.values
+        .where(_isMethod)
+        .map(_castToMethodMirror)
+        .where(DeclarationAnnotationFacade.filterByAnnotation(Bean))
+        .map(_makeBeanMethod(configuration))
+        .forEach(_beansAwaitingConstruction.add);
+    }
+
+    if (type.superclass != null) {
+      _findBeansAwaitingConstruction(configuration, type.superclass);
+    }
+    type.superinterfaces.forEach((ClassMirror interface) {
+      _findBeansAwaitingConstruction(configuration, interface);
+    });
+  }
+
+  static bool _isNotMixinEnhanced(ClassMirror type) =>
+    type.mixin == type;
 
   static bool _isMethod(DeclarationMirror mirror) =>
     mirror is MethodMirror;
@@ -157,10 +174,24 @@ class AutowiredLoader {
 
   Iterable<AutowiredInstance> load(Object object) {
     InstanceMirror clazz = reflect(object);
+    List<DeclarationMirror> result = [];
 
-    return clazz.type.declarations.values
-      .where(DeclarationAnnotationFacade.filterByAnnotation(Autowired))
-      .map(_makeAutowiredInstance(clazz));
+    _findAutowires(clazz.type, result);
+    return result.map(_makeAutowiredInstance(clazz));
+  }
+
+  void _findAutowires(ClassMirror type, List<DeclarationMirror> autowires) {
+    autowires.addAll(
+      type.declarations.values
+        .where(DeclarationAnnotationFacade.filterByAnnotation(Autowired))
+    );
+
+    if (type.superclass != null) {
+      _findAutowires(type.superclass, autowires);
+    }
+    type.superinterfaces.forEach((ClassMirror interface) {
+      _findAutowires(interface, autowires);
+    });
   }
 }
 
