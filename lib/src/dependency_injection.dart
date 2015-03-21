@@ -14,6 +14,14 @@ class AbstractInjectConfiguration {
     _repo.add(bean);
   }
 
+  void autowireBean(Object bean) {
+    AutowiredLoader loader = new AutowiredLoader();
+
+    new AutowiredLoader()
+      .load(bean)
+      .forEach(_performAutowire);
+  }
+
   void configure() {
     _registerBeans();
     _autowire();
