@@ -6,6 +6,20 @@ void testImplement() {
   feature.load(new _ImplementSteps());
 
   feature.scenario("A configuration which implements another")
+    .given("a configuration with an interface with beans")
+    .when("I call configure() on the configuration")
+    .then("the bean is created")
+    .and("the bean is autowired")
+    .test();
+
+  feature.scenario("A configuration which implements another")
+    .given("a configuration with an interface with autowires")
+    .when("I call configure() on the configuration")
+    .then("the bean is created")
+    .and("the bean is autowired")
+    .test();
+
+  feature.scenario("A configuration which implements another")
     .given("a configuration with an interface with beans and autowires")
     .when("I call configure() on the configuration")
     .then("the bean is created")
@@ -15,9 +29,19 @@ void testImplement() {
 
 class _ImplementSteps {
 
+  @Given("a configuration with an interface with beans")
+  void makeImplementBeanConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _ImplementBeanConfiguration());
+  }
+
+  @Given("a configuration with an interface with autowires")
+  void makeImplementAutowireConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _ImplementAutowireConfiguration());
+  }
+
   @Given("a configuration with an interface with beans and autowires")
-  void makeFieldConfiguration(Map<String, dynamic> context) {
-    _setConfiguration(context, new _ImplementConfiguration());
+  void makeImplementBeanAutowireConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _ImplementBeanAutowireConfiguration());
   }
 
   @When("I call configure() on the configuration")

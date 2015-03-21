@@ -6,6 +6,20 @@ void testWith() {
   feature.load(new _WithSteps());
 
   feature.scenario("A configuration which applies another as a mixin")
+    .given("a configuration with a mixin with beans")
+    .when("I call configure() on the configuration")
+    .then("the bean is created")
+    .and("the bean is autowired")
+    .test();
+
+  feature.scenario("A configuration which applies another as a mixin")
+    .given("a configuration with a mixin with autowires")
+    .when("I call configure() on the configuration")
+    .then("the bean is created")
+    .and("the bean is autowired")
+    .test();
+
+  feature.scenario("A configuration which applies another as a mixin")
     .given("a configuration with a mixin with beans and autowires")
     .when("I call configure() on the configuration")
     .then("the bean is created")
@@ -15,9 +29,19 @@ void testWith() {
 
 class _WithSteps {
 
+  @Given("a configuration with a mixin with beans")
+  void makeWithBeanConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _WithBeanConfiguration());
+  }
+
+  @Given("a configuration with a mixin with autowires")
+  void makeWithAutowireConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _WithAutowireConfiguration());
+  }
+
   @Given("a configuration with a mixin with beans and autowires")
-  void makeFieldConfiguration(Map<String, dynamic> context) {
-    _setConfiguration(context, new _WithConfiguration());
+  void makeWithBeanAutowireConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _WithBeanAutowireConfiguration());
   }
 
   @When("I call configure() on the configuration")

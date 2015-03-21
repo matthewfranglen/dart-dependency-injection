@@ -6,6 +6,20 @@ void testExtend() {
   feature.load(new _ExtendSteps());
 
   feature.scenario("A configuration which extends another")
+    .given("a configuration with a superclass with beans")
+    .when("I call configure() on the configuration")
+    .then("the bean is created")
+    .and("the bean is autowired")
+    .test();
+
+  feature.scenario("A configuration which extends another")
+    .given("a configuration with a superclass with autowires")
+    .when("I call configure() on the configuration")
+    .then("the bean is created")
+    .and("the bean is autowired")
+    .test();
+
+  feature.scenario("A configuration which extends another")
     .given("a configuration with a superclass with beans and autowires")
     .when("I call configure() on the configuration")
     .then("the bean is created")
@@ -15,9 +29,19 @@ void testExtend() {
 
 class _ExtendSteps {
 
+  @Given("a configuration with a superclass with beans")
+  void makeBeanConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _ExtendBeanConfiguration());
+  }
+
+  @Given("a configuration with a superclass with autowires")
+  void makeAutowireConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _ExtendAutowireConfiguration());
+  }
+
   @Given("a configuration with a superclass with beans and autowires")
-  void makeFieldConfiguration(Map<String, dynamic> context) {
-    _setConfiguration(context, new _ExtendConfiguration());
+  void makeBeanAutowireConfiguration(Map<String, dynamic> context) {
+    _setConfiguration(context, new _ExtendBeanAutowireConfiguration());
   }
 
   @When("I call configure() on the configuration")
