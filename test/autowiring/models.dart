@@ -128,7 +128,7 @@ class _AssignmentFailureExceptionThrowingConfiguration extends AbstractInjectCon
     return 'bean';
   }
 
-  @autowired void autowireBean() {
+  @autowired void brokenAutowire() {
     throw new Exception();
   }
 }

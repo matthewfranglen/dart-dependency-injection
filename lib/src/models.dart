@@ -48,6 +48,13 @@ class BeanMethod {
     _method.parameters
       .map(beans.resolve)
       .toList();
+
+  String toString() {
+    String className = patch.getSymbolValue(_clazz.type.simpleName);
+    String methodName = patch.getSymbolValue(_method.simpleName);
+
+    return "BeanMethod(${className}.${methodName})";
+  }
 }
 
 class BeanInstance {
