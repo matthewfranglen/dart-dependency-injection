@@ -8,7 +8,13 @@ void testConfigurationBean() {
   feature.scenario("A bean configuration")
     .given("a configuration with a @Configuration bean")
     .when("I call configure() on the configuration")
-    .then("the @Configuration bean beans are created")
+    .then("the contained @Configuration bean beans are created")
+    .test();
+
+  feature.scenario("A bean configuration post-configure")
+    .given("a configured configuration")
+    .when("I call addBean with a @Configuration bean")
+    .then("the provided @Configuration bean beans are created")
     .test();
 }
 
@@ -16,25 +22,48 @@ class _ConfigurationBeanSteps {
 
   @Given("a configuration with a @Configuration bean")
   void makeBeanConfiguration(Map<String, dynamic> context) {
-    _setConfiguration(context, new _ConfigurationBeanConfiguration());
+    context["configuration"] = new _ConfigurationBeanConfiguration();
+  }
+
+  @Given("a configured configuration")
+  void makeBlankConfiguration(Map<String, dynamic> context) {
+    context["configuration"] =
+      new _BlankConfiguration()
+        ..configure();
   }
 
   @When("I call configure() on the configuration")
   void callConfigure(Map<String, dynamic> context) {
-    _getConfiguration(context).configure();
+    (context["configuration"] as AbstractInjectConfiguration)
+      .configure();
   }
 
-  @Then("the @Configuration bean beans are created")
-  void testBeanAutowired(Map<String, dynamic> context) {
-    expect(_getConfiguration(context).field, equals("inner-bean"));
+  @When("I call addBean with a @Configuration bean")
+  void callAddBean(Map<String, dynamic> context) {
+    _CreatedBeanConfiguration bean = new _CreatedBeanConfiguration();
+    _BlankConfiguration configuration =
+      context["configuration"] as _BlankConfiguration;
+
+    configuration.addBean(new BeanInstance(bean));
+    configuration.autowireBean(bean);
+    context["bean"] = bean;
   }
 
-  void _setConfiguration(Map<String, dynamic> context, _ConfigurationBeanConfiguration configuration) {
-    context["configuration"] = configuration;
+  @Then("the contained @Configuration bean beans are created")
+  void testContainedBeanAutowired(Map<String, dynamic> context) {
+    _ConfigurationBeanConfiguration config =
+      context["configuration"] as _ConfigurationBeanConfiguration;
+
+    expect(config.configurationBeanBeansCreated, isTrue);
   }
 
-  _ConfigurationBeanConfiguration _getConfiguration(Map<String, dynamic> context) =>
-    context["configuration"];
+  @Then("the provided @Configuration bean beans are created")
+  void testProvidedBeanAutowired(Map<String, dynamic> context) {
+    _CreatedBeanConfiguration config =
+      context["bean"] as _CreatedBeanConfiguration;
+
+    expect(config.configurationBeanBeansCreated, isTrue);
+  }
 }
 
 // vim: set ai et sw=2 syntax=dart :
