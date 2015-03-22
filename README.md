@@ -55,6 +55,18 @@ Methods, setters, and fields can be autowired. A method that is autowired can ac
       @autowired void method(SomeClass someBean, AnotherClass anotherBean) {}
     }
 
+The object returned by a bean method is inspected. If it has autowired fields then they will be populated. If the bean class has the configuration annotation then it can create other beans:
+
+    class Configuration extends AbstractInjectConfiguration {
+      @bean AnotherConfiguration makeConfigurationBean() => new AnotherConfiguration();
+    }
+
+    @configuration class AnotherConfiguration {
+      @autowired AnotherClass field;
+
+      @bean AnotherClass makeBean() => new AnotherClass();
+    }
+
 Description
 -----------
 
@@ -115,6 +127,24 @@ The bean methods do not have to create the bean, they merely have to return it. 
     }
 
 If you use this approach then you may wish to review the *polymer_dependency_injection* package, which can scan the DOM looking for annotated polymer elements. It loads those elements as beans and allows them to be autowired.
+
+### Configuration Beans
+
+A _Configuration Bean_ is a _Bean_ which has a type with the _Configuration_ annotation. Configuration Beans can contain _Bean_ creating methods just like the AbstractInjectConfiguration subclass.
+
+The beans created by a configuration bean are available to all classes for autowiring. The configuration bean and all beans it creates are eligible for autowiring.
+
+    class Configuration extends AbstractInjectConfiguration {
+      @autowired AnotherClass field;
+
+      @bean AnotherConfiguration makeConfigurationBean() => new AnotherConfiguration();
+    }
+
+    @configuration class AnotherConfiguration {
+      @autowired Configuration baseConfiguration;
+
+      @bean AnotherClass makeBean() => new AnotherClass();
+    }
 
 ### Autowiring
 

@@ -12,6 +12,10 @@ class AbstractInjectConfiguration {
 
   void addBean(BeanInstance bean) {
     _repo.add(bean);
+
+    if (BeanLoader.isConfigurationBean(bean)) {
+      _registerBeans(bean);
+    }
   }
 
   void autowireBean(Object bean) {
@@ -23,15 +27,15 @@ class AbstractInjectConfiguration {
   }
 
   void configure() {
-    _registerBeans();
+    BeanInstance configurationBean = new BeanInstance(this);
+    _repo.add(configurationBean);
+    _registerBeans(configurationBean);
     _autowire();
   }
 
-  void _registerBeans() {
-    BeanLoader loader = new BeanLoader.fromObject(this);
-
-    _repo.add(new BeanInstance(this));
-    loader.load(_repo, _beans);
+  void _registerBeans(BeanInstance configuration) {
+    new BeanLoader.fromObject(configuration.instance)
+      .load(_repo, _beans);
   }
 
   void _autowire() {
@@ -77,6 +81,9 @@ class BeanLoader {
       _findBeansAwaitingConstruction(configuration, configuration.type);
   }
 
+  static bool isConfigurationBean(BeanInstance bean) =>
+    new InstanceAnnotationFacade(bean.instance).hasAnnotationOf(Configuration);
+
   void _findBeansAwaitingConstruction(InstanceMirror configuration, ClassMirror type) {
     if (_isNotMixinEnhanced(type)) {
       type.declarations.values
@@ -109,12 +116,24 @@ class BeanLoader {
 
   void load(BeanRepository repo, BeanResolver beans) {
     while (_beansAwaitingConstruction.isNotEmpty) {
-      BeanMethod method = _beansAwaitingConstruction.firstWhere(
-        (BeanMethod method) => method.canInvoke(beans)
-      );
-      repo.add(method.invoke(beans));
+      BeanMethod method = _getNextInvokableBeanMethod(beans);
+      BeanInstance bean = method.invoke(beans);
+      repo.add(bean);
+      if (isConfigurationBean(bean)) {
+        _scanConfigurationBean(bean);
+      }
       _beansAwaitingConstruction.remove(method);
     }
+  }
+
+  BeanMethod _getNextInvokableBeanMethod(BeanResolver beans) =>
+    _beansAwaitingConstruction.firstWhere(
+      (BeanMethod method) => method.canInvoke(beans)
+    );
+
+  void _scanConfigurationBean(BeanInstance bean) {
+    InstanceMirror mirror = reflect(bean.instance);
+    _findBeansAwaitingConstruction(mirror, mirror.type);
   }
 }
 
