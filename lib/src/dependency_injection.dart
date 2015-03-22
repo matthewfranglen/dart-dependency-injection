@@ -11,6 +11,9 @@ class AbstractInjectConfiguration {
   }
 
   void addBean(BeanInstance bean) {
+    if (_isConfigurationBean(bean)) {
+      _scanConfigurationBean(bean);
+    }
     _repo.add(bean);
   }
 
@@ -23,15 +26,21 @@ class AbstractInjectConfiguration {
   }
 
   void configure() {
-    _registerBeans();
+    _repo.add(new BeanInstance(this));
+    _registerBeans(this);
     _autowire();
   }
 
-  void _registerBeans() {
-    BeanLoader loader = new BeanLoader.fromObject(this);
+  bool _isConfigurationBean(BeanInstance bean) =>
+    new InstanceAnnotationFacade(bean.instance).hasAnnotationOf(Configuration);
 
-    _repo.add(new BeanInstance(this));
-    loader.load(_repo, _beans);
+  void _scanConfigurationBean(BeanInstance bean) {
+    _registerBeans(bean.instance);
+  }
+
+  void _registerBeans(Object configuration) {
+    new BeanLoader.fromObject(configuration)
+      .load(this, _beans);
   }
 
   void _autowire() {
@@ -107,14 +116,11 @@ class BeanLoader {
   static _BeanMethodConstructor _makeBeanMethod(InstanceMirror configurationClass) =>
     (MethodMirror method) => new BeanMethod(configurationClass, method);
 
-  void load(BeanRepository repo, BeanResolver beans) {
+  void load(AbstractInjectConfiguration config, BeanResolver beans) {
     while (_beansAwaitingConstruction.isNotEmpty) {
       BeanMethod method = _getNextInvokableBeanMethod(beans);
       BeanInstance bean = method.invoke(beans);
-      repo.add(bean);
-      if (_isConfigurationBean(bean)) {
-        _scanConfigurationBean(bean);
-      }
+      config.addBean(bean);
       _beansAwaitingConstruction.remove(method);
     }
   }
@@ -123,14 +129,6 @@ class BeanLoader {
     _beansAwaitingConstruction.firstWhere(
       (BeanMethod method) => method.canInvoke(beans)
     );
-
-  bool _isConfigurationBean(BeanInstance bean) =>
-    new InstanceAnnotationFacade(bean.instance).hasAnnotationOf(Configuration);
-
-  void _scanConfigurationBean(BeanInstance bean) {
-    InstanceMirror mirror = reflect(bean.instance);
-    _findBeansAwaitingConstruction(mirror, mirror.type);
-  }
 }
 
 class BeanResolver {
