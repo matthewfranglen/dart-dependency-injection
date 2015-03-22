@@ -109,12 +109,27 @@ class BeanLoader {
 
   void load(BeanRepository repo, BeanResolver beans) {
     while (_beansAwaitingConstruction.isNotEmpty) {
-      BeanMethod method = _beansAwaitingConstruction.firstWhere(
-        (BeanMethod method) => method.canInvoke(beans)
-      );
-      repo.add(method.invoke(beans));
+      BeanMethod method = _getNextInvokableBeanMethod(beans);
+      BeanInstance bean = method.invoke(beans);
+      repo.add(bean);
+      if (_isConfigurationBean(bean)) {
+        _scanConfigurationBean(bean);
+      }
       _beansAwaitingConstruction.remove(method);
     }
+  }
+
+  BeanMethod _getNextInvokableBeanMethod(BeanResolver beans) =>
+    _beansAwaitingConstruction.firstWhere(
+      (BeanMethod method) => method.canInvoke(beans)
+    );
+
+  bool _isConfigurationBean(BeanInstance bean) =>
+    new InstanceAnnotationFacade(bean.instance).hasAnnotationOf(Configuration);
+
+  void _scanConfigurationBean(BeanInstance bean) {
+    InstanceMirror mirror = reflect(bean.instance);
+    _findBeansAwaitingConstruction(mirror, mirror.type);
   }
 }
 
