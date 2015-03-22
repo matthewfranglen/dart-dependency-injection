@@ -10,8 +10,6 @@ part of dependency_injection;
 ///     class Wizzler {
 ///       @Autowired()
 ///       Fobrinator fobrinator;
-///
-/// TODO: Support inherited methods, fields and setters
 class Autowired {
 
   final bool required;
@@ -32,8 +30,6 @@ const Autowired autowired = const Autowired();
 ///       @Autowired()
 ///       @Qualifier("wizzle")
 ///       Wizzler wizzler;
-///
-/// TODO: Support
 class Qualifier {
 
   final String value;
@@ -89,8 +85,6 @@ const Bean bean = const Bean();
 ///     @Component()
 ///     @Primary()
 ///     class FluxCapacitor {
-///
-/// TODO: Support
 class Component {
 
   final String name;
