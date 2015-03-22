@@ -94,6 +94,38 @@ class Component {
 
 const Component component = const Component();
 
+/// Configuration annotates a class which is a discoverable configuration.
+///
+/// When instances of a [Configuration] annotated class are discovered during
+/// autoloading they are inspected and any [Bean] annotated methods are
+/// invoked, storing the resulting beans in the [BeanRepository].
+///
+/// When a configuration creates a bean the bean type is inspected for this
+/// annotation. This allows any bean to be a configuration, no matter the
+/// discovery route.
+///
+/// The configuration annotation is a subclass of [Component] so every class
+/// annotated with this is treated as a bean.
+///
+///     @Configuration()
+///     class WarpDriveConfiguration {
+///       @Bean() dynamic getHeisenburgCompensator() {}
+///
+///     @Component(name: "fluxCapacitor")
+///     class WarpDriveConfiguration {
+///       @Bean() dynamic getHeisenburgCompensator() {}
+///
+///     @Component()
+///     @Primary()
+///     class WarpDriveConfiguration {
+///       @Bean() dynamic getHeisenburgCompensator() {}
+class Configuration extends Component {
+
+  const Configuration({String name: null}) : super(name: name);
+}
+
+const Configuration configuration = const Configuration();
+
 /// Primary annotates a [Component] class or [Bean] method to indicate a preferred bean.
 ///
 /// It is not possible to inject values into [Autowired] fields when the type
