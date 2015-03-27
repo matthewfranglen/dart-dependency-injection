@@ -19,8 +19,6 @@ class AbstractInjectConfiguration {
   }
 
   void autowireBean(Object bean) {
-    AutowiredLoader loader = new AutowiredLoader();
-
     new AutowiredLoader()
       .load(bean)
       .forEach(_performAutowire);
