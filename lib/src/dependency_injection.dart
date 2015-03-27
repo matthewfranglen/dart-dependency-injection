@@ -167,7 +167,7 @@ class BeanResolver {
     }
 
     if (qualifiers.isNotEmpty) {
-      List<String> qualifierNames =
+      Iterable<String> qualifierNames =
         qualifiers.map((Qualifier qualifier) => qualifier.value);
 
       beans = beans.where((BeanInstance bean) => qualifierNames.contains(bean.name));
