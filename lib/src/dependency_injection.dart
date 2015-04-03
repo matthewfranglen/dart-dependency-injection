@@ -70,11 +70,12 @@ class AbstractInjectConfiguration {
     _beans = new BeanResolver(_repo);
   }
 
-  void addBean(BeanInstance bean) {
-    _repo.add(bean);
+  void addBean(Object bean) {
+    BeanInstance wrappedBean = new BeanInstance(bean);
+    _repo.add(wrappedBean);
 
-    if (BeanLoader.isConfigurationBean(bean)) {
-      _registerBeans(bean);
+    if (BeanLoader.isConfigurationBean(wrappedBean)) {
+      _registerBeans(wrappedBean);
     }
   }
 
