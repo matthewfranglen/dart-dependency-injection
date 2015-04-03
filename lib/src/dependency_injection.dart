@@ -278,15 +278,54 @@ class BeanLoader {
   }
 }
 
+/// Used to resolve available beans for a field or parameter.
+///
+///     BeanRepository repo;
+///
+///     new BeanResolver(repo)
+///       .canResolve(variableMirror);
 class BeanResolver {
 
   final BeanRepository _repo;
 
   BeanResolver(this._repo);
 
+  /// Test if there is at least one available bean that can be assigned to the variable.
+  ///
+  /// This does not test that assignment would be successful. If multiple beans
+  /// are assignable then this method will return true but the [resolve] method
+  /// will throw an exception. The [Primary] and [Qualifier] annotations can be
+  /// used to assist the resolution process.
+  ///
+  ///     BeanRepository repo;
+  ///
+  ///     new BeanResolver(repo)
+  ///       .canResolve(variableMirror);
   bool canResolve(VariableMirror target) =>
     _repo.hasAssignableBean(target.type);
 
+  /// Returns the bean that can be assigned to the variable or throws an exception.
+  ///
+  /// This tests every bean in the repository to determine if any can be
+  /// assigned. If there are no matching beans then an exception is thrown. If
+  /// there is a single matching bean then it is returned. If there are
+  /// multiple matching beans then they can be further filtered to find the one
+  /// best bean to use. If such filtering fails then an exception is thrown.
+  ///
+  /// The filtering of multiple beans uses the [Primary] and [Qualifier]
+  /// annotations. If any of the beans has a [Primary] annotation then every
+  /// bean without that annotation is filtered. If the target variable has a
+  /// [Qualifier] annotation then every bean that does not have a matching name
+  /// is filtered. Both of these filtering steps are performed at the same
+  /// time. If a single bean remains after the filtering then it is returned.
+  /// If many beans remain, or if all beans have been filtered, then an
+  /// exception is thrown.
+  ///
+  ///     BeanRepository repo;
+  ///
+  ///     new BeanResolver(repo)
+  ///       .resolve(variableMirror);
+  // TODO: Perform filtering in all possible ways to get a single bean. Prefer Qualifier over Primary.
   dynamic resolve(VariableMirror target) =>
     _resolve(target.type, _getQualifiers(target));
 
