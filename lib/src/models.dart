@@ -1,5 +1,6 @@
 part of dependency_injection;
 
+/// Contains all loaded beans.
 class BeanRepository {
 
   final List<BeanInstance> beans;
@@ -27,6 +28,7 @@ class BeanRepository {
   bool _isPrimary(BeanInstance bean) => bean.isPrimary;
 }
 
+/// A wrapper around a bean producing method.
 class BeanMethod {
 
   final InstanceMirror _clazz;
@@ -57,6 +59,7 @@ class BeanMethod {
   }
 }
 
+/// A wrapper around a bean.
 class BeanInstance {
 
   final String name;
@@ -105,6 +108,7 @@ class BeanInstance {
   }
 }
 
+/// The base class for wrappers around an [Autowired] annotated declaration.
 abstract class AutowiredInstance {
 
   static bool _isMethod(DeclarationMirror mirror) =>
@@ -137,6 +141,7 @@ abstract class AutowiredInstance {
   String toString();
 }
 
+/// A wrapper around an [Autowired] annotated method or setter.
 class AutowiredMethod implements AutowiredInstance {
 
   final InstanceMirror _clazz;
@@ -170,6 +175,7 @@ class AutowiredMethod implements AutowiredInstance {
       .toList();
 }
 
+/// A wrapper around an [Autowired] annotated field.
 class AutowiredField implements AutowiredInstance {
 
   final InstanceMirror _clazz;
