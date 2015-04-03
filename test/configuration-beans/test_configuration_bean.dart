@@ -44,7 +44,7 @@ class _ConfigurationBeanSteps {
     _BlankConfiguration configuration =
       context["configuration"] as _BlankConfiguration;
 
-    configuration.addBean(new BeanInstance(bean));
+    configuration.addBean(bean);
     configuration.autowireBean(bean);
     context["bean"] = bean;
   }
