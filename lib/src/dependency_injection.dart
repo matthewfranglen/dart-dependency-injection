@@ -373,10 +373,18 @@ class BeanResolver {
     patch.getSymbolValue(type.simpleName);
 }
 
+/// Used to create [AutowiredInstance] objects from the [Autowired] methods, setters and fields on objects.
+///
+///     new new AutowiredLoader()
+///       .load(object);
 class AutowiredLoader {
 
   AutowiredLoader();
 
+  /// Inspects the object to find every [Autowired] method, setter and field returning them as [AutowiredInstance] objects.
+  ///
+  ///     new new AutowiredLoader()
+  ///       .load(object);
   Iterable<AutowiredInstance> load(Object object) {
     InstanceMirror clazz = reflect(object);
     List<DeclarationMirror> result = [];
