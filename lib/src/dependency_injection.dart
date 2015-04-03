@@ -184,12 +184,22 @@ class AbstractInjectConfiguration {
   }
 }
 
+/// Used to create beans from [Bean] annotated methods and load them into the [BeanRepository].
+///
+///     BeanRepository repo;
+///     BeanResolver beans;
+///
+///     new BeanLoader(reflect(object))
+///       .load(repo, beans);
 class BeanLoader {
 
   final List<BeanMethod> _beansAwaitingConstruction;
 
   BeanLoader.fromObject(Object configuration) : this(reflect(configuration));
 
+  /// Inspects the configuration provided registering any [BeanMethod] available.
+  ///
+  ///     new BeanLoader(reflect(object));
   BeanLoader(InstanceMirror configuration) :
     _beansAwaitingConstruction = [] {
       _findBeansAwaitingConstruction(configuration, configuration.type);
@@ -198,6 +208,23 @@ class BeanLoader {
   static bool isConfigurationBean(BeanInstance bean) =>
     new InstanceAnnotationFacade(bean.instance).hasAnnotationOf(Configuration);
 
+  /// Loads every [BeanMethod] registered in the loader.
+  ///
+  /// This handles beans which require other beans by performing a simple
+  /// topological sort. If there are any cycles between bean creating methods
+  /// then the sort will fail.
+  ///
+  /// The order in which each [BeanMethod] is invoked is not fixed. If multiple
+  /// beans can be created of the same Type and another [BeanMethod] requires
+  /// that Type as a parameter then bean loading may nor may not fail. You
+  /// should not rely upon the order in which the beans are created.
+  ///
+  ///     BeanRepository repo;
+  ///     BeanResolver beans;
+  ///
+  ///     new BeanLoader(reflect(object))
+  ///       .load(repo, beans);
+  // TODO: Perform the sort across all configuration classes.
   void load(BeanRepository repo, BeanResolver beans) {
     while (_beansAwaitingConstruction.isNotEmpty) {
       BeanMethod method = _getNextInvokableBeanMethod(beans);
