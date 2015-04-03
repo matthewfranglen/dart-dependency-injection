@@ -70,6 +70,52 @@ class AbstractInjectConfiguration {
     _beans = new BeanResolver(_repo);
   }
 
+  /// This triggers the creation of all beans and the autowiring of all methods, setters and fields.
+  ///
+  /// All [bean] annotated methods on this configuration are invoked. The
+  /// object returned by the method is registered as a bean. If any of them
+  /// return a configuration bean then all contained [bean] annotated methods
+  /// are invoked. This can repeat to any depth.
+  ///
+  /// The [bean] annotated methods can have parameters. All parameters are
+  /// resolved using the existing registered beans. If it is not possible to
+  /// resolve the parameters for a [bean] annotated method then this method
+  /// will throw an exception.
+  ///
+  /// Once all beans have been created autowiring starts. Every [bean] is
+  /// inspected for methods, setters and fields with the [autowired]
+  /// annotation. Those methods and setters are invoked and the fields are set
+  /// with arguments resolved from the loaded beans.
+  ///
+  /// The resolution of a bean for an autowire works based on [Type]. If the
+  /// [Type] of the bean can be assigned to the [Type] of the autowired
+  /// argument or field then the bean will be used to invoke the method or
+  /// setter or to set the field.
+  ///
+  /// If there are no eligible beans for an autowired argument or field then an
+  /// exception will be thrown.
+  ///
+  /// If there are multiple eligible beans for an autowired argument or field
+  /// then an exception will be thrown. To resolve this situation use the
+  /// [Primary] and [Qualifier] annotations.
+  void configure() {
+    BeanInstance configurationBean = new BeanInstance(this);
+    _repo.add(configurationBean);
+    _registerBeans(configurationBean);
+    _autowire();
+  }
+
+  /// Adds a bean to the [BeanRepository].
+  ///
+  /// The bean passed to this object is registered manually and as such does
+  /// not need to come from a [Bean] annotated method.
+  ///
+  /// If the bean is added before [configure] is called then it will be
+  /// autowired. To manually autowire the bean call [autowireBean].
+  ///
+  ///     new Configuration()
+  ///       ..addBean(object)
+  ///       ..configure();
   void addBean(Object bean) {
     BeanInstance wrappedBean = new BeanInstance(bean);
     _repo.add(wrappedBean);
@@ -79,17 +125,26 @@ class AbstractInjectConfiguration {
     }
   }
 
+  /// Autowire all annotated methods, setters and fields on the provided object.
+  ///
+  /// The object passed to this is fully autowired in the same way that the
+  /// beans are autowired when [configure] is called. The object passed to this
+  /// does not need to be a registered bean.
+  ///
+  /// It is not a good idea to call this on an object which is registered as a
+  /// bean before the [configure] method is called. Such a bean would end up
+  /// getting autowired two times.
+  ///
+  /// Autowiring a configuration bean with this method does not trigger the
+  /// creation or autowiring of the contained beans.
+  ///
+  ///     new Configuration()
+  ///       ..configure()
+  ///       ..autowireBean(object);
   void autowireBean(Object bean) {
     new AutowiredLoader()
       .load(bean)
       .forEach(_performAutowire);
-  }
-
-  void configure() {
-    BeanInstance configurationBean = new BeanInstance(this);
-    _repo.add(configurationBean);
-    _registerBeans(configurationBean);
-    _autowire();
   }
 
   void _registerBeans(BeanInstance configuration) {
@@ -143,6 +198,30 @@ class BeanLoader {
   static bool isConfigurationBean(BeanInstance bean) =>
     new InstanceAnnotationFacade(bean.instance).hasAnnotationOf(Configuration);
 
+  void load(BeanRepository repo, BeanResolver beans) {
+    while (_beansAwaitingConstruction.isNotEmpty) {
+      BeanMethod method = _getNextInvokableBeanMethod(beans);
+      BeanInstance bean = method.invoke(beans);
+      repo.add(bean);
+      if (isConfigurationBean(bean)) {
+        _scanConfigurationBean(bean);
+      }
+      _beansAwaitingConstruction.remove(method);
+    }
+  }
+
+  static bool _isNotMixinEnhanced(ClassMirror type) =>
+    type.mixin == type;
+
+  static bool _isMethod(DeclarationMirror mirror) =>
+    mirror is MethodMirror;
+
+  static MethodMirror _castToMethodMirror(DeclarationMirror mirror) =>
+    mirror as MethodMirror;
+
+  static _BeanMethodConstructor _makeBeanMethod(InstanceMirror configurationClass) =>
+    (MethodMirror method) => new BeanMethod(configurationClass, method);
+
   void _findBeansAwaitingConstruction(InstanceMirror configuration, ClassMirror type) {
     if (_isNotMixinEnhanced(type)) {
       type.declarations.values
@@ -159,30 +238,6 @@ class BeanLoader {
     type.superinterfaces.forEach((ClassMirror interface) {
       _findBeansAwaitingConstruction(configuration, interface);
     });
-  }
-
-  static bool _isNotMixinEnhanced(ClassMirror type) =>
-    type.mixin == type;
-
-  static bool _isMethod(DeclarationMirror mirror) =>
-    mirror is MethodMirror;
-
-  static MethodMirror _castToMethodMirror(DeclarationMirror mirror) =>
-    mirror as MethodMirror;
-
-  static _BeanMethodConstructor _makeBeanMethod(InstanceMirror configurationClass) =>
-    (MethodMirror method) => new BeanMethod(configurationClass, method);
-
-  void load(BeanRepository repo, BeanResolver beans) {
-    while (_beansAwaitingConstruction.isNotEmpty) {
-      BeanMethod method = _getNextInvokableBeanMethod(beans);
-      BeanInstance bean = method.invoke(beans);
-      repo.add(bean);
-      if (isConfigurationBean(bean)) {
-        _scanConfigurationBean(bean);
-      }
-      _beansAwaitingConstruction.remove(method);
-    }
   }
 
   BeanMethod _getNextInvokableBeanMethod(BeanResolver beans) =>
@@ -202,7 +257,8 @@ class BeanResolver {
 
   BeanResolver(this._repo);
 
-  bool canResolve(VariableMirror target) => _repo.hasAssignableBean(target.type);
+  bool canResolve(VariableMirror target) =>
+    _repo.hasAssignableBean(target.type);
 
   dynamic resolve(VariableMirror target) =>
     _resolve(target.type, _getQualifiers(target));
