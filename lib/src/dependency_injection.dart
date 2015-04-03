@@ -377,9 +377,6 @@ class AutowiredLoader {
 
   AutowiredLoader();
 
-  static _AutowiredInstanceConstructor _makeAutowiredInstance(InstanceMirror clazz) =>
-    (DeclarationMirror declaration) => new AutowiredInstance(clazz, declaration);
-
   Iterable<AutowiredInstance> load(Object object) {
     InstanceMirror clazz = reflect(object);
     List<DeclarationMirror> result = [];
@@ -387,6 +384,9 @@ class AutowiredLoader {
     _findAutowires(clazz.type, result);
     return result.map(_makeAutowiredInstance(clazz));
   }
+
+  static _AutowiredInstanceConstructor _makeAutowiredInstance(InstanceMirror clazz) =>
+    (DeclarationMirror declaration) => new AutowiredInstance(clazz, declaration);
 
   void _findAutowires(ClassMirror type, List<DeclarationMirror> autowires) {
     autowires.addAll(
