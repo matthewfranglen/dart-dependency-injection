@@ -237,8 +237,20 @@ class BeanLoader {
     }
   }
 
-  static bool _isNotMixinEnhanced(ClassMirror type) =>
-    type.mixin == type;
+  static bool _isNotMixinEnhanced(ClassMirror type) {
+    // TODO: On firefox the ClassMirror.mixin getter is unimplemented.
+    // This functionality is currently used to spot mixin application. Mixin
+    // application seems to alter the class heirarchy leading to some doubling
+    // of the Types. This method was used to ignore the classes in the
+    // heirarchy that are the result of the combination of the mixin and the
+    // base class. Another way will need to be found to handle this.
+    try {
+      return type.mixin == type;
+    }
+    catch (exception) {
+      return true;
+    }
+  }
 
   static bool _isMethod(DeclarationMirror mirror) =>
     mirror is MethodMirror;
