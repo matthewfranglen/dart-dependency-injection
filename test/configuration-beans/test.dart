@@ -6,10 +6,11 @@ import 'package:behave/behave.dart';
 
 part 'models.dart';
 part 'test_configuration_bean.dart';
+part 'test_dependency_loop.dart';
 
 void test() {
   testConfigurationBean();
+  testDependencyLoop();
 }
 
 // vim: set ai et sw=2 syntax=dart :
-
