@@ -224,7 +224,6 @@ class BeanLoader {
   ///
   ///     new BeanLoader(reflect(object))
   ///       .load(repo, beans);
-  // TODO: Perform the sort across all configuration classes.
   void load(BeanRepository repo, BeanResolver beans) {
     while (_beansAwaitingConstruction.isNotEmpty) {
       BeanMethod method = _getNextInvokableBeanMethod(beans);

@@ -21,4 +21,22 @@ class _CreatedBeanConfiguration {
   bool get configurationBeanBeansCreated => field != null;
 }
 
+class _DependencyLoopConfiguration extends AbstractInjectConfiguration {
+
+  bool dependentBeanCreated = false;
+
+  @bean _DependencyLoopBeanConfiguration makeConfiguration() => new _DependencyLoopBeanConfiguration();
+
+  @bean Object makeDependentBean(String configurationBeanBean) {
+    dependentBeanCreated = true;
+    return new Object();
+  }
+}
+
+@configuration
+class _DependencyLoopBeanConfiguration {
+
+  @bean String makeBean() => "inner-bean";
+}
+
 // vim: set ai et sw=2 syntax=dart :
