@@ -25,6 +25,8 @@ class _DependencyLoopConfiguration extends AbstractInjectConfiguration {
 
   bool dependentBeanCreated = false;
 
+  @bean num makeNumber() => 42;
+
   @bean _DependencyLoopBeanConfiguration makeConfiguration() => new _DependencyLoopBeanConfiguration();
 
   @bean Object makeDependentBean(String configurationBeanBean) {
@@ -36,7 +38,7 @@ class _DependencyLoopConfiguration extends AbstractInjectConfiguration {
 @configuration
 class _DependencyLoopBeanConfiguration {
 
-  @bean String makeBean() => "inner-bean";
+  @bean String makeBean(num number) => "inner-bean";
 }
 
 // vim: set ai et sw=2 syntax=dart :
