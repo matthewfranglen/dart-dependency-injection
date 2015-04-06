@@ -16,6 +16,12 @@ void testInvocation() {
     .when("I call configure() on the configuration")
     .then("the @PostConstruct method is invoked")
     .test();
+
+  feature.scenario("A configuration with a post construct method with an argument")
+    .given("a configuration containing a @PostConstruct method")
+    .when("I call configure() on the configuration")
+    .then("the @PostConstruct method is invoked")
+    .test();
 }
 
 class _InvocationSteps {
@@ -28,6 +34,12 @@ class _InvocationSteps {
 
   @Given("a configuration containing a @PostConstruct method")
   void makeConfigurationWithMethod(Map<String, dynamic> context) {
+    _PostConstructConfigurationWithMethod configuration = new _PostConstructConfigurationWithMethod();
+    context["configuration"] = configuration;
+  }
+
+  @Given("a configuration containing a @PostConstruct method with an argument")
+  void makeConfigurationWithArgument(Map<String, dynamic> context) {
     _PostConstructConfigurationWithMethod configuration = new _PostConstructConfigurationWithMethod();
     context["configuration"] = configuration;
   }

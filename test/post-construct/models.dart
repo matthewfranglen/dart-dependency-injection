@@ -26,4 +26,15 @@ class _PostConstructConfigurationWithMethod extends AbstractInjectConfiguration 
   }
 }
 
+class _PostConstructConfigurationWithArgument extends AbstractInjectConfiguration {
+
+  bool postConstructMethodCalled = false;
+
+  @bean String makeBean() => 'bean';
+
+  @postConstruct void initialize(String bean) {
+    postConstructMethodCalled = true;
+  }
+}
+
 // vim: set ai et sw=2 syntax=dart :
