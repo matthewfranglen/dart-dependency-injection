@@ -146,6 +146,18 @@ class Primary {
 
 const Primary primary = const Primary();
 
+/// PostConstruct annotates a method in a [Bean] to call after all autowiring has completed.
+///
+/// Initialization of a bean may depend on all autowires being satisfied,
+/// including autowires on other beans. The PostConstruct annotation allows
+/// methods to be defined which will be called after all autowiring has been
+/// performed.
+///
+/// The PostConstruct methods may take beans as parameters.
+///
+///     class SomeBean {
+///       @PostConstruct()
+///       void initialize() {
 class PostConstruct {
   const PostConstruct();
 }

@@ -436,6 +436,10 @@ class AutowiredLoader {
   }
 }
 
+/// Used to create [PostConstructMethod] objects from the [PostConstruct] methods on objects.
+///
+///     new PostConstructLoader()
+///       .load(object);
 class PostConstructLoader {
 
   /// Inspects the object to find every [PostConstruct] method returning them as [PostConstructMethod] objects.
