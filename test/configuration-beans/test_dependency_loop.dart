@@ -27,7 +27,7 @@ class _DependencyLoopSteps {
 
   @Then("the dependent bean is created")
   void testContainedBeanAutowired(Map<String, dynamic> context) {
-    _ConfigurationBeanConfiguration config =
+    _DependencyLoopConfiguration config =
       context["configuration"] as _DependencyLoopConfiguration;
 
     expect(config.dependentBeanCreated, isTrue);
