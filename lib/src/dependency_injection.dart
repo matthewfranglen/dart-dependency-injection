@@ -189,7 +189,7 @@ class AbstractInjectConfiguration {
       _autowireBean(autowire);
     }
     catch (exception) {
-      print("Did not autowire ${autowire}: ${exception.message}");
+      _log.fine("Did not autowire ${autowire}: ${exception.message}");
     }
   }
 
