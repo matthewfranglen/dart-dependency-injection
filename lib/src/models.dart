@@ -59,6 +59,35 @@ class BeanMethod {
   }
 }
 
+/// A wrapper around a bean initialization method.
+class PostConstructMethod {
+
+  final InstanceMirror _clazz;
+  final MethodMirror _method;
+
+  PostConstructMethod(this._clazz, MethodMirror method)
+    : _method = method;
+
+  bool canInvoke(BeanResolver beans) =>
+    _method.parameters.every(beans.canResolve);
+
+  void invoke(BeanResolver beans) {
+    _clazz.invoke(_method.simpleName, _getParameters(beans)).reflectee;
+  }
+
+  List<dynamic> _getParameters(BeanResolver beans) =>
+    _method.parameters
+      .map(beans.resolve)
+      .toList();
+
+  String toString() {
+    String className = patch.getSymbolValue(_clazz.type.simpleName);
+    String methodName = patch.getSymbolValue(_method.simpleName);
+
+    return "PostConstructMethod(${className}.${methodName})";
+  }
+}
+
 /// A wrapper around a bean.
 class BeanInstance {
 

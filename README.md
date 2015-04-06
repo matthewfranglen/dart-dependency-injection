@@ -67,6 +67,22 @@ The object returned by a bean method is inspected. If it has autowired fields th
       @bean AnotherClass makeBean() => new AnotherClass();
     }
 
+Initialization can be done after all beans have been created and all autowires have been performed. Just define a method that has the postConstruct annotation:
+
+    class ExampleBean {
+      @postConstruct void initialize() {}
+    }
+
+    class Configuration extends AbstractInjectConfiguration {
+      @bean ExampleBean getBean() => new ExampleBean();
+    }
+
+The postConstruct methods can take beans as arguments, just like the autowires:
+
+    class ExampleBean {
+      @postConstruct void initialize(AnotherClass anotherBean) {}
+    }
+
 Description
 -----------
 
@@ -248,6 +264,25 @@ Beans are automatically assigned names based on the name of the method that crea
 
       // This gets autowired without issue
       @autowired void method(@Qualifier("namedBean") String value) {}
+    }
+
+### Post Construction Initialization
+
+Some initialization must wait for all autowiring to be completed. When this is the case the _PostConstruct_ annotation can be used to mark a method to be invoked once bean construction and autowiring has completed. For example:
+
+    class Configuration extends AbstractInjectConfiguration {
+      @postConstruct void initialize() {}
+    }
+
+Every loaded bean will be searched for methods with this annotation when _configure_ is called. The initialization method can take bean parameters, just like autowired methods:
+
+    class ExampleBean {
+      @postConstruct void initialize(String host) {}
+    }
+
+    class Configuration extends AbstractInjectConfiguration {
+      @bean String getHost() => "example.com";
+      @bean ExampleBean getBean() => new ExampleBean();
     }
 
 Example Code
