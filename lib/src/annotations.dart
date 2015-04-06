@@ -146,4 +146,10 @@ class Primary {
 
 const Primary primary = const Primary();
 
+class PostConstruct {
+  const PostConstruct();
+}
+
+const PostConstruct postConstruct = const PostConstruct();
+
 // vim: set ai et sw=2 syntax=dart :
