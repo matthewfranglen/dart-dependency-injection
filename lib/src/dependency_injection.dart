@@ -103,6 +103,7 @@ class AbstractInjectConfiguration {
     _repo.add(configurationBean);
     _registerBeans(configurationBean);
     _autowire();
+    _postConstruct();
   }
 
   /// Adds a bean to the [BeanRepository].
@@ -161,6 +162,15 @@ class AbstractInjectConfiguration {
       .forEach(_performAutowire);
   }
 
+  void _postConstruct() {
+    PostConstructLoader loader = new PostConstructLoader();
+
+    _repo.beans
+      .map((BeanInstance bean) => bean.instance)
+      .expand((Object bean) => loader.load(bean))
+      .forEach(_invokePostConstruct);
+  }
+
   void _performAutowire(AutowiredInstance autowire) {
     if (autowire.required) {
       _autowireBean(autowire);
@@ -181,6 +191,10 @@ class AbstractInjectConfiguration {
     catch (exception) {
       print("Did not autowire ${autowire}: ${exception.message}");
     }
+  }
+
+  void _invokePostConstruct(PostConstructMethod postConstruct) {
+    postConstruct.invoke(_beans);
   }
 }
 
@@ -422,7 +436,40 @@ class AutowiredLoader {
   }
 }
 
+class PostConstructLoader {
+
+  /// Inspects the object to find every [PostConstruct] method returning them as [PostConstructMethod] objects.
+  ///
+  ///     new PostConstructLoader()
+  ///       .load(object);
+  Iterable<AutowiredInstance> load(Object object) {
+    InstanceMirror clazz = reflect(object);
+    List<DeclarationMirror> result = [];
+
+    _findPostConstructs(clazz.type, result);
+    return result.map(_makePostConstructMethod(clazz));
+  }
+
+  static _PostConstructConstructor _makePostConstructMethod(InstanceMirror clazz) =>
+    (DeclarationMirror declaration) => new PostConstructMethod(clazz, declaration);
+
+  void _findPostConstructs(ClassMirror type, List<DeclarationMirror> postConstructs) {
+    postConstructs.addAll(
+      type.declarations.values
+        .where(DeclarationAnnotationFacade.filterByAnnotation(PostConstruct))
+    );
+
+    if (type.superclass != null) {
+      _findPostConstructs(type.superclass, postConstructs);
+    }
+    type.superinterfaces.forEach((ClassMirror interface) {
+      _findPostConstructs(interface, postConstructs);
+    });
+  }
+}
+
 typedef BeanMethod _BeanMethodConstructor(MethodMirror mirror);
 typedef AutowiredInstance _AutowiredInstanceConstructor(DeclarationMirror mirror);
+typedef PostConstructMethod _PostConstructConstructor(DeclarationMirror mirror);
 
 // vim: set ai et sw=2 syntax=dart :
