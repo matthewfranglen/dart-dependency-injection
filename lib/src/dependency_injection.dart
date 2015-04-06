@@ -386,7 +386,7 @@ class BeanResolver {
 
 /// Used to create [AutowiredInstance] objects from the [Autowired] methods, setters and fields on objects.
 ///
-///     new new AutowiredLoader()
+///     new AutowiredLoader()
 ///       .load(object);
 class AutowiredLoader {
 
@@ -394,7 +394,7 @@ class AutowiredLoader {
 
   /// Inspects the object to find every [Autowired] method, setter and field returning them as [AutowiredInstance] objects.
   ///
-  ///     new new AutowiredLoader()
+  ///     new AutowiredLoader()
   ///       .load(object);
   Iterable<AutowiredInstance> load(Object object) {
     InstanceMirror clazz = reflect(object);
